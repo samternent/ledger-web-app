@@ -1,0 +1,17 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+  },
+  "extends": ["plugin:prettier/recommended", "prettier/vue"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "plugins": ["import", "prettier"],
+  "rules": {
+    "prettier/prettier": ["error"],
+  }
+}

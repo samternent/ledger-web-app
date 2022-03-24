@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-hidden" data-theme="concordsdark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="apple-touch-icon" sizes="128x128" href="/icon-128x128.png" />
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#30302e">
+
+    <link rel="manifest" href="/manifest.webmanifest">
+
+    <!-- Primary Meta Tags -->
+    <title>Ledger.</title>
+    <meta name="title" content="Ledger." />
+    
+    <meta
+      name="description"
+      content="Storage Agnostic, Tamper-Proof & Encrypted Ledger. Inspired by Bitcoins blockchain and running completely in the browser."
+    />
+    <meta name="color-scheme" content="dark light">
+
+    <script>
+      const theme = localStorage.getItem('theme');
+      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+      if (theme) {
+        document.documentElement.dataset.theme = theme;
+      }
+    </script>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.concords.app" />
+    <meta property="og:title" content="🏄🏼 concords.app" />
+    <meta property="og:image" content="/icon-512x512.png" />
+    <meta
+      property="og:description"
+      content="A no-code, storage agnostic & self-distributed immutable ledger. Inspired by Bitcoins blockchain and written to run completely in the browser."
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:url" content="https://ledger.concords.app" />
+    <meta property="twitter:title" content="Ledger | concords.app" />
+    <meta
+      property="twitter:description"
+      content="Storage agnostic & Tamper-Proof Ledger. Inspired by Bitcoins blockchain and written to run completely in the browser."
+    />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <% for (let css in htmlWebpackPlugin.files.css) { %>
+    <script src="<%= htmlWebpackPlugin.files.css[css] %>"></script>
+    <% } %>
+  </head>
+  <body class="overflow-hidden">
+    <div id="app" class="overflow-hidden"></div>
+
+    <% for (let js in htmlWebpackPlugin.files.js.filter((text) =>
+    /main./.test(text))) { %>
+    <script src="<%= htmlWebpackPlugin.files.js[js] %>"></script>
+    <% } %>
+  </body>
+</html>

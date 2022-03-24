@@ -1,0 +1,157 @@
+<template>
+  <div class="form-control flex-1 relative z-50 overflow-visible w-96">
+    <div class="input-group flex items-center">
+      <input
+        type="text"
+        placeholder="Search…"
+        v-model="searchTerm"
+        @focus="searchInFocus = true"
+        @blur="searchInFocus = false"
+        class="input input-bordered w-full input-sm"
+      />
+      <div class="p-3 opacity-70">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+    </div>
+    <div
+      v-if="searchResults.length && shouldShowSearchResults"
+      class="absolute top-full flex z-50 mt-2 right-10 left-0"
+    >
+      <ul tabindex="0" class="p-2 shadow bg-base-200 rounded-box flex-1 shadow-lg border border-base-100">
+        <li
+          v-for="result in searchResults"
+          :key="`${result.id}_${result.content}`"
+          @click="searchTerm = ''"
+          class="flex"
+        >
+          <router-link
+            class="p-2 px-4 hover:bg-base-200 flex-1 rounded-full flex flex-col"
+            :to="`/l/${treeId}/${result.id}`"
+          >
+            <div class="flex items-center">
+              <span
+                v-if="result.parent"
+                class="opacity-80 text-xs truncate max-w-[80px]"
+                >{{ result.parent.name }}</span
+              >
+              <span v-else>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 opacity-80"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3 mx-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <span
+                class="text-primary"
+                v-html="
+                  result.name.replace(
+                    new RegExp(searchTerm, 'i'),
+                    `<mark>${searchTerm}</mark>`
+                  )
+                "
+              />
+            </div>
+            <div
+              class="truncate w-64"
+              v-if="result.content"
+              v-html="`..${formatContentResult(result.content)}`"
+            />
+          </router-link>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+import { computed, shallowRef, watch } from "vue";
+export default {
+  props: {
+    modelValue: {
+      type: String,
+      required: true,
+    },
+    searchResults: {
+      type: Array,
+      default: () => [],
+    },
+    treeId: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props, { emit }) {
+    const searchTerm = computed({
+      get: () => props.modelValue,
+      set: (value) => emit("update:modelValue", value),
+    });
+
+    const searchInFocus = shallowRef(false);
+    const shouldShowSearchResults = shallowRef(false);
+    let timeout = null;
+
+    watch(searchInFocus, (value) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        shouldShowSearchResults.value = value;
+      }, 200);
+    }, { immediate: true });
+
+    function formatContentResult(content) {
+      const strippedText = content.replace(/<[^>]*>?/gm, "");
+      const position = strippedText
+        .toLowerCase()
+        .indexOf(searchTerm.value.toLowerCase());
+
+      return strippedText
+        .substr(position)
+        .replace(
+          new RegExp(searchTerm.value, "i"),
+          `<mark>${searchTerm.value}</mark>`
+        );
+    }
+
+    return {
+      searchTerm,
+      searchInFocus,
+      shouldShowSearchResults,
+      formatContentResult,
+    };
+  },
+};
+</script>
