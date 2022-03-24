@@ -19,7 +19,7 @@
       <main class="flex-1 overflow-auto flex">
         <!-- Left Fixed Panel -->
         <div
-          class="bg-base-200 relative flex border-r border-base-300"
+          class="bg-base-200 relative flex border-r border-base-300 transition-all"
           :class="isLeftPanelExpanded ? 'w-64' : 'w-10'"
           v-if="$route.meta.hasLeftPanel"
         >
@@ -46,7 +46,7 @@
 
           <div
             id="LeftPanelContent"
-            class="mt-2 flex flex-1 flex-col transition-all duration-100 overflow-x-hidden"
+            class="p-2 flex flex-1 flex-col overflow-x-hidden"
             v-show="isLeftPanelExpanded"
             :class="{ 'opacity-0': !isLeftPanelExpanded }"
           />
@@ -81,7 +81,7 @@
           </button>
           <div
             id="RightPanelContent"
-            class="mt-8 flex h-full flex-col transition-all duration-100 overflow-x-hidden px-2"
+            class="mt-8 flex h-full flex-col overflow-x-hidden px-2"
             v-show="isRightPanelExpanded"
             :class="{ 'opacity-0': !isRightPanelExpanded }"
           />
