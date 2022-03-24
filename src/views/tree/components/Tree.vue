@@ -34,9 +34,9 @@
         :create-mode="createMode"
         :level="level + 1" />
     </div>
-    <div class="flex text-sm my-2" :class="{'ml-8': !children.length && level, 'mb-2 pr-4': !level }" :style="`padding-left: ${16 * level + 1}px`" v-if="branch.id === $route.params.branch && createMode">
-      <input class="input input-xs truncate" placeholder="Create Page..." v-model="newBranchName">
-      <button class="btn btn-primary btn-xs btn-outline ml-2" @click="addBranch">+</button>
+    <div class="flex text-sm my-2" :class="{'ml-8': level, 'mb-2 pr-4': !level }" :style="`padding-left: ${16 * level + 1}px`" v-if="branch.id === $route.params.branch && createMode">
+      <input class="input input-sm truncate" @keydown.enter="addBranch" placeholder="Page Name..." v-model="newBranchName">
+      <button class="btn btn-sm btn-ghost ml-2" @click="addBranch">+</button>
     </div>
   </div>
 </template>

@@ -46,11 +46,8 @@
             {{ activeBranch.name }}
           </div>
           <div class="flex">
-            <router-link :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-sm mr-2">
+            <router-link :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-outline btn-sm mr-2">
               Edit
-            </router-link>
-            <router-link :to="`/l/${id}/${activeBranch.id}/data`" class="btn btn-secondary btn-outline btn-sm mr-2">
-              Data
             </router-link>
           </div>
         </div>

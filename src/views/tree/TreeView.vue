@@ -2,10 +2,10 @@
   <div class="relative flex overflow-auto">
     <Teleport to="#LeftPanelContent">
       <div class="overflow-x-hidden pr-6">
-        <Tree v-if="trunk.id" :branch-id="trunk.id" :expand-all="true" />
+        <Tree v-if="trunk.id" :branch-id="trunk.id" />
       </div>
     </Teleport>
-    <Branch v-if="activeBranch" @explore="showDrawer = true" />
+    <Branch v-if="activeBranch" />
   </div>
 </template>
 <script>
