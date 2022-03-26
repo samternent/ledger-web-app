@@ -24,7 +24,7 @@ module.exports = merge(webpackBase, {
       filename: '[name].[contenthash].css',
       chunkFilename: '[name].[contenthash].css',
     }),
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
   ],
   output: {
     filename: "[name].[contenthash].js",
