@@ -38,6 +38,7 @@
           class="flex"
         >
           <router-link
+            :alt="result.name"
             class="p-2 px-4 hover:bg-base-200 flex-1 rounded-full flex flex-col"
             :to="`/l/${treeId}/${result.id}`"
           >

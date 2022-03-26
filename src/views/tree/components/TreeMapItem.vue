@@ -5,6 +5,7 @@
       :style="`background-color: rgba(${hexToRgb(branch.color)}, 0.2);`"
     >
       <router-link
+        :alt="branch.name"
         class="bg-base-200 border-l-4 hover:bg-base-300 w-52 h-16 flex items-center px-4 shadow"
         :class="{ 'text-xl': !level }"
         :style="`border-color: ${branch.color};`"
