@@ -21,7 +21,7 @@
             Create
           </button>
           <div class="divider">OR</div>
-          <router-link to="/l/import" class="btn btn-secondary btn-outline my-1">
+          <router-link alt="import" to="/l/import" class="btn btn-secondary btn-outline my-1">
             Import
           </router-link>
         </div>

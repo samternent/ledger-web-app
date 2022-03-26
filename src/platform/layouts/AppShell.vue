@@ -24,6 +24,8 @@
           v-if="$route.meta.hasLeftPanel"
         >
           <button
+            aria-label="Toggle Left Panel"
+            :aria-pressed="isLeftPanelExpanded"
             @click="isLeftPanelExpanded = !isLeftPanelExpanded"
             class="z-20 btn btn-circle btn-ghost btn-sm absolute right-1 top-1"
           >
@@ -60,6 +62,8 @@
           v-if="$route.meta.hasRightPanel"
         >
           <button
+            aria-label="Toggle Right Panel"
+            :aria-pressed="isRightPanelExpanded"
             @click="isRightPanelExpanded = !isRightPanelExpanded"
             class="btn btn-circle btn-ghost btn-sm absolute left-1 top-1"
           >
@@ -121,6 +125,8 @@
               </svg>
             </router-link>
             <button
+              aria-label="Toggle Bottom Panel"
+              :aria-pressed="isBottomPanelExpanded"
               @click="isBottomPanelExpanded = !isBottomPanelExpanded"
               class="btn btn-circle btn-ghost btn-sm"
             >

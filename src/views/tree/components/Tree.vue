@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col w-full">
     <div class="flex group" :class="{'ml-6': !children.length && level, 'mb-2 pr-4': !level }" :style="`padding-left: ${16 * level}px`">
-      <button class="mr-2" @click="toggleCollapse" v-if="children.length">
+      <button aria-label="Collapse Page Tree" class="mr-2" @click="toggleCollapse" v-if="children.length">
         <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
@@ -10,13 +10,14 @@
         </svg>
       </button> 
       <router-link
+        :alt="branch.name"
         class="block w-full truncate text-sm font-light"
         :class="{ 'text-xl': !level }"
         active-class="text-secondary"
         :to="`/l/${id}/${branch.id}`">
         {{ branch.name }}
       </router-link>
-      <router-link :to="`/l/${id}/${branch.id}/create`" class="opacity-0 group-hover:opacity-50 hover:opacity-80">
+      <router-link :alt="`Create child of ${branch.name}`" :to="`/l/${id}/${branch.id}/create`" class="opacity-0 group-hover:opacity-50 hover:opacity-80">
         <svg v-if="!addChild" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>

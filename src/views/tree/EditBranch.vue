@@ -3,7 +3,7 @@
     <div class="text-sm breadcrumbs p-2 flex overflow-visible flex-row flex-1">
       <ul class="flex-1">
         <li>
-          <router-link :to="`/l/${id}`">
+          <router-link alt="Ledger Home" :to="`/l/${id}`">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-6 w-6"
@@ -21,12 +21,13 @@
           </router-link>
         </li>
         <li v-if="activeParent">
-          <router-link :to="`/l/${id}/${activeBranch.parent}`">{{
+          <router-link :alt="activeBranch.parent" :to="`/l/${id}/${activeBranch.parent}`">{{
             activeParent.name
           }}</router-link>
         </li>
         <li>
           <router-link
+            :alt="activeBranch.name"
             :to="`/l/${id}/${activeBranch.id}`"
             class="block truncate"
             >{{ activeBranch.name }}</router-link

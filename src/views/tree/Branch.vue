@@ -6,7 +6,7 @@
       >
         <ul class="flex-1">
           <li>
-            <router-link :to="`/l/${id}`">
+            <router-link alt="Ledger Home" :to="`/l/${id}`">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6"
@@ -24,7 +24,7 @@
             </router-link>
           </li>
           <li v-if="activeParent">
-            <router-link :to="`/l/${activeBranch.parent}`">{{
+            <router-link :alt="activeParent.name" :to="`/l/${activeBranch.parent}`">{{
               activeParent.name
             }}</router-link>
           </li>
@@ -46,7 +46,7 @@
             {{ activeBranch.name }}
           </div>
           <div class="flex">
-            <router-link :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-outline btn-sm mr-2">
+            <router-link alt="Edit" :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-outline btn-sm mr-2">
               Edit
             </router-link>
           </div>
