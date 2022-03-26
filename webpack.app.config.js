@@ -37,9 +37,46 @@ module.exports = merge(webpackBase, {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
-      }
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
+          },
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require("tailwindcss")("./tailwind.config.js"),
+                  require("@fullhuman/postcss-purgecss")({
+                    content: ["**/*.html", "**/*.tsx", "**/*.svelte"],
+                    css: ["**/*.css"],
+                    defaultExtractor: (content) => {
+                      // Capture as liberally as possible, including things like `h-(screen-1.5)`
+                      const broadMatches =
+                        content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+                      const broadMatchesWithoutTrailingSlash = broadMatches.map(
+                        (match) => trimEnd(match, "\\")
+                      );
+
+                      // Capture classes within other delimiters like .block(class="w-1/2") in Pug
+                      const innerMatches =
+                        content.match(
+                          /[^<>"'`\s.(){}[\]#=%]*[^<>"'`\s.(){}[\]#=%:]/g
+                        ) || [];
+
+                      return broadMatches
+                        .concat(broadMatchesWithoutTrailingSlash)
+                        .concat(innerMatches);
+                    },
+                  }),
+                ],
+              },
+            },
+          },
+        ],
+      },
     ],
   },
 });
