@@ -56,7 +56,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <% for (let css in htmlWebpackPlugin.files.css) { %>
-    <script src="<%= htmlWebpackPlugin.files.css[css] %>"></script>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>"></script>
     <% } %>
   </head>
   <body class="overflow-hidden">
