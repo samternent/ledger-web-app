@@ -154,15 +154,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-path {
-  stroke-width: 8;
-  stroke: black;
-  stroke-linecap: round;
-  fill: none;
-}
-
-path.fill {
-  fill: black;
-}
-</style>

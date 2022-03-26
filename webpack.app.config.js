@@ -2,10 +2,13 @@ const { merge } = require("webpack-merge");
 const webpackBase = require("./webpack.base.config");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = merge(webpackBase, {
   mode: "production",
   entry: "./src/main.js",
+  devtool: 'source-map',
   plugins: [
     new WorkboxPlugin.GenerateSW({
       // these options encourage the ServiceWorkers to get in there fast
@@ -16,6 +19,12 @@ module.exports = merge(webpackBase, {
     new CopyWebpackPlugin({
       patterns: [{ from: "public" }],
     }),
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[name].[contenthash].css',
+    }),
+    new BundleAnalyzerPlugin(),
   ],
   output: {
     filename: "[name].[contenthash].js",
@@ -23,25 +32,27 @@ module.exports = merge(webpackBase, {
   },
   optimization: {
     splitChunks: {
-      chunks: "async",
-      minSize: 20000,
-      minRemainingSize: 0,
-      minChunks: 1,
-      maxAsyncRequests: 30,
-      maxInitialRequests: 30,
-      enforceSizeThreshold: 50000,
-      cacheGroups: {
-        defaultVendors: {
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10,
-          reuseExistingChunk: true,
-        },
-        default: {
-          minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true,
-        },
-      },
+      chunks: 'all',
     },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              modules: {
+                mode: 'icss',
+              },
+            },
+          },
+          // "postcss-loader",
+        ],
+      },
+    ],
   },
 });
