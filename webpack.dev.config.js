@@ -11,4 +11,12 @@ module.exports = merge(webpackBase, {
     port: 3000,
     historyApiFallback: true,
   },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["vue-style-loader", "css-loader", "postcss-loader"],
+      },
+    ],
+  },
 });

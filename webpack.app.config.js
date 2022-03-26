@@ -3,6 +3,7 @@ const webpackBase = require("./webpack.base.config");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = merge(webpackBase, {
   mode: "production",
@@ -18,6 +19,7 @@ module.exports = merge(webpackBase, {
     new CopyWebpackPlugin({
       patterns: [{ from: "public" }],
     }),
+    new MiniCssExtractPlugin(),
     // new BundleAnalyzerPlugin(),
   ],
   output: {
@@ -32,11 +34,12 @@ module.exports = merge(webpackBase, {
   module: {
     rules: [
       {
-        test: /\.css$/i,
+        test: /\.css$/,
         use: [
-          "css-loader"
-        ],
-      },
+          MiniCssExtractPlugin.loader,
+          'css-loader'
+        ]
+      }
     ],
   },
 });

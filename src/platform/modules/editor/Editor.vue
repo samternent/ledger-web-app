@@ -64,7 +64,6 @@ export default {
   setup(props, { emit }) {
     const editor = ref(null);
     const showTools = ref(false);
-    let autoSaveTimeout = null;
 
     onMounted(() => {
       editor.value = new Editor({
