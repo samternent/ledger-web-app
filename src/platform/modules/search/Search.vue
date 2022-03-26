@@ -133,7 +133,9 @@ export default {
     }, { immediate: true });
 
     function formatContentResult(content) {
-      const strippedText = content.replace(/<[^>]*>?/gm, "");
+      const doc = new DOMParser().parseFromString(content, 'text/html');
+      const strippedText = doc.body.textContent || "";
+
       const position = strippedText
         .toLowerCase()
         .indexOf(searchTerm.value.toLowerCase());
