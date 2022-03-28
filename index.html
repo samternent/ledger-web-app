@@ -62,8 +62,7 @@
   <body class="overflow-hidden">
     <div id="app" class="overflow-hidden"></div>
 
-    <% for (let js in htmlWebpackPlugin.files.js.filter((text) =>
-    /main./.test(text))) { %>
+    <% for (let js in htmlWebpackPlugin.files.js) { %>
     <script src="<%= htmlWebpackPlugin.files.js[js] %>"></script>
     <% } %>
   </body>
