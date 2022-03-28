@@ -2,7 +2,7 @@ const { merge } = require("webpack-merge");
 const webpackBase = require("./webpack.base.config");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = merge(webpackBase, {
@@ -25,11 +25,6 @@ module.exports = merge(webpackBase, {
   output: {
     filename: "[name].[contenthash].js",
     publicPath: "/",
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
   },
   module: {
     rules: [
