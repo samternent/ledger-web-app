@@ -19,14 +19,6 @@ module.exports = {
         loader: "vue-loader",
       },
       {
-        test: /\.js$/,
-        loader: "babel-loader",
-      },
-      {
-        test: /\.css$/,
-        use: ["vue-style-loader", "css-loader", "postcss-loader"],
-      },
-      {
         test: /\.md$/,
         type: "asset/source",
       },

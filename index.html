@@ -56,14 +56,13 @@
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <% for (let css in htmlWebpackPlugin.files.css) { %>
-    <script src="<%= htmlWebpackPlugin.files.css[css] %>"></script>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>"></script>
     <% } %>
   </head>
   <body class="overflow-hidden">
     <div id="app" class="overflow-hidden"></div>
 
-    <% for (let js in htmlWebpackPlugin.files.js.filter((text) =>
-    /main./.test(text))) { %>
+    <% for (let js in htmlWebpackPlugin.files.js) { %>
     <script src="<%= htmlWebpackPlugin.files.js[js] %>"></script>
     <% } %>
   </body>

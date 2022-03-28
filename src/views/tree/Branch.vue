@@ -56,7 +56,7 @@
         </div>
         <div v-else class="mx-auto text-center flex flex-col my-8">
           <VoidSVG class="text-accent w-64 mx-auto opacity-90" />
-          <h2 class="text-xl font-light opacity-50 my-8">
+          <h2 class="text-xl font-light opacity-80 my-8">
             Add some content to this page
           </h2>
         </div>
