@@ -34,7 +34,7 @@ export default {
       methods: { loadLedger },
     } = useLedger();
     const router = useRouter();
-    const { decryptData } = useEncryption();
+    const { decryptDataWithPassword } = useEncryption();
 
     async function handleLoad(raw) {
       try {
@@ -43,7 +43,7 @@ export default {
         await loadLedger(l);
       } catch (err) {
         const password = prompt('Probably password protected, what is it?');
-        const l = JSON.parse(await decryptData(raw, password));
+        const l = JSON.parse(await decryptDataWithPassword(raw, password));
         await loadLedger(l);
       } finally {
         await nextTick();
