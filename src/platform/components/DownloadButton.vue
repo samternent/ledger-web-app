@@ -18,7 +18,7 @@ export default {
   },
   setup(props) {
     async function saveKey() {
-      const filename = `${props.fileName}.json`;
+      const filename = props.fileName;
       const blob = new Blob([props.data], {type: 'application/x-pem-file'});
 
       if (window.navigator.msSaveOrOpenBlob) {

@@ -1,6 +1,6 @@
 <template>
-  <div v-if="ledger" class="flex h-full flex-1">
-    <div class="w-1/2 shadow flex flex-col flex-1 pt-1 bg-base-200">
+  <div v-if="ledger" class="flex h-full flex-1  bg-base-200">
+    <div class="w-1/2 shadow flex flex-col pt-1 bg-base-200">
       <div class="tabs">
         <span
           @click="activeView = 'log'"
@@ -33,11 +33,26 @@
         <FullLog />
       </div>
     </div>
-    <div class="w-1/2 bg-base-200 flex flex-col">
-      <div class="flex-1 flex p-2 justify-end flex-col">
+    <div class="divider divider-horizontal" />
+    <div class="w-1/2 bg-base-200 flex flex-col pt-1">
+     <div class="tabs">
+        <span
+          @click="activeViewRight = 'commit'"
+          class="tab tab-lifted"
+          :class="{ 'tab-active': activeViewRight === 'commit'}">
+          Commit
+        </span> 
+        <span
+          @click="activeViewRight = 'save'"
+          class="tab tab-lifted"
+          :class="{ 'tab-active': activeViewRight === 'save'}">
+          Save
+        </span> 
+      </div>
+      <div class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2" v-if="activeViewRight === 'commit'">
         <textarea
           v-model="commitMessage"
-          class="textarea resize-none bg-base-100 rounded h-18"
+          class="textarea resize-none textarea-bordered bg-base-100 rounded flex-1"
           placeholder="Commit message..."
         />
         <div class="flex justify-end mt-4">
@@ -57,23 +72,49 @@
           </button>
         </div>
       </div>
-      <div class="flex justify-between px-2 items-center">
-        <input
-          type="password"
-          class="input input-border input-sm my-2 mr-4 bg-base-100 rounded flex-1"
-          placeholder="Password Protect"
-          v-model="password"
-        />
-        <input
-          type="password"
-          class="input input-border input-sm my-2 mr-4 bg-base-100 rounded flex-1"
-          placeholder="Confirm Password"
-          v-model="confirmPassword"
-        />
-        <div>
-          <DownloadButton :file-name="ledger.id" :data="encryptedData">
-            <span v-if="password && confirmPassword && password === confirmPassword" class="mr-1">Encrypt &</span>Save
-          </DownloadButton>
+      
+      <div class="flex-1 overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'save'">
+        <div class="flex justify-between px-2 items-center">
+          <textarea
+            class="textarea textarea-bordered textarea-xs my-2 mr-4 bg-base-100 rounded flex-1"
+            :class="{ 'textarea-error': openPGPKeyError }"
+            placeholder="Encrypt for OpenPGP Key"
+            v-model="openPGPPublicKey"
+          />
+        </div>
+        <div class="flex justify-between px-2 items-center">
+          <input
+            type="password"
+            class="input input-bordered input-sm my-2 mr-4 bg-base-100 rounded flex-1"
+            placeholder="Password Protect"
+            v-model="password"
+          />
+          <input
+            type="password"
+            class="input input-bordered input-sm my-2 mr-4 bg-base-100 rounded flex-1"
+            placeholder="Confirm Password"
+            v-model="confirmPassword"
+          />
+        </div>
+        <div class="flex w-full justify-end px-4 py-2">
+          <div v-if="encryptedData">
+            <span class="text-xs mr-4">Password Encrypted</span>
+            <DownloadButton :file-name="`${ledger.id}.cryp`" :data="encryptedData">
+              <span class="mr-1">Encrypt & Save</span>
+            </DownloadButton>
+          </div>
+          <div v-else-if="openPGPEncryptedData">
+            OpenPGP Encrypted
+            <DownloadButton :file-name="`${ledger.id}.pgp`" :data="openPGPEncryptedData">
+              <span class="mr-1">Encrypt & Save</span>
+            </DownloadButton>
+          </div>
+          <div v-else>
+            <span class="text-xs mr-4">Unencrypted</span>
+            <DownloadButton :file-name="`${ledger.id}.json`" :data="JSON.stringify(ledger)">
+              <span class="mr-1">Save</span>
+            </DownloadButton>
+          </div>
         </div>
       </div>
     </div>
@@ -94,13 +135,16 @@ export default {
   },
   setup() {
     const activeView = ref(localStorage.getItem('consoleActiveView') || 'log');
+    const activeViewRight = ref(localStorage.getItem('consoleActiveViewRight') || 'commit');
     const { ledger, api } = useLedger();
-    const { encryptData, decryptData } = useEncryption();
+    const { encryptDataWithPGP, encryptDataWithPassword } = useEncryption();
 
     const output = ref(null);
     const commitMessage = ref(null);
     const password = ref('');
     const confirmPassword = ref('');
+    const openPGPPublicKey = ref('');
+    const openPGPKeyError = ref(false);
 
     async function squashCommit() {
       await api.value.squashRecords();
@@ -116,14 +160,44 @@ export default {
     watch(activeView, () => {
       localStorage.setItem('consoleActiveView', activeView.value)
     })
+    watch(activeViewRight, () => {
+      localStorage.setItem('consoleActiveViewRight', activeViewRight.value)
+    })
 
-    const encryptedData = ref(ledger.value);
+    const encryptedData = ref(null);
+    const openPGPEncryptedData = ref(null);
     
-    watchThrottled([password, confirmPassword, ledger], async ([_password, _confirmPassword, _ledger]) => {
+    watchThrottled(
+      [
+        password,
+        confirmPassword,
+        ledger,
+      ],
+      async ([
+        _password,
+        _confirmPassword,
+        _ledger,
+      ]) => {
         if (_password && _confirmPassword && _password === _confirmPassword) {
-          encryptedData.value = await encryptData(JSON.stringify(_ledger), _password);
+          encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
         } else {
-          encryptedData.value = JSON.stringify(_ledger);
+          encryptedData.value = null;
+        }
+      },
+      { throttle: 500 }
+    );
+    
+    watchThrottled([openPGPPublicKey, ledger], async ([_openPGPPublicKey, _ledger]) => {
+        openPGPKeyError.value = false;
+        if (_openPGPPublicKey && _ledger) {
+          try {
+            openPGPEncryptedData.value = await encryptDataWithPGP(JSON.stringify(_ledger), _openPGPPublicKey);
+          } catch(e) {
+            openPGPEncryptedData.value = null;
+            openPGPKeyError.value = true;
+          }
+        } else {
+          openPGPEncryptedData.value = null;
         }
       },
       { throttle: 500 }
@@ -137,10 +211,14 @@ export default {
       },
       output,
       activeView,
+      activeViewRight,
       commitMessage,
       password,
       encryptedData,
+      openPGPEncryptedData,
       confirmPassword,
+      openPGPPublicKey,
+      openPGPKeyError,
     };
   },
 };

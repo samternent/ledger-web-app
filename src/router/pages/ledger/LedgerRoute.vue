@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-import { watchEffect } from "vue";
+import { useRouter } from "vue-router";
 import { provideTree } from "@/platform/composables/useTree";
 import { provideTreeLoader } from '@/platform/composables/useTreeLoader';
 import TreeList from '@/views/tree/TreeList.vue'
@@ -33,6 +33,7 @@ export default {
   },
   setup(props) {
     const { loadTree } = provideTreeLoader();
+    const router = useRouter();
 
     const rawLedger = JSON.parse(localStorage.getItem("ledger"));
     if (rawLedger) {

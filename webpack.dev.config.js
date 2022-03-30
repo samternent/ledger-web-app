@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 const webpackBase = require("./webpack.base.config");
 
@@ -19,4 +20,10 @@ module.exports = merge(webpackBase, {
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: false,
+      __VUE_PROD_DEVTOOLS__: true,
+    }),
+  ],
 });
