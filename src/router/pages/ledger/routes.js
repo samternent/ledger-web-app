@@ -42,7 +42,7 @@ export default [
         props: true,
         meta: {
           hasLeftPanel: false,
-          // hasTopPanel: false,
+          hasRightPanel: true,
         },
         component: () => import("./views/DataBranchRoute.vue"),
       },

@@ -11,16 +11,6 @@ module.exports = {
       fontFamily: {
         sans: ["Work Sans", ...defaultTheme.fontFamily.sans],
       },
-      colors: {
-        one: "var(--color-a)",
-        two: "var(--color-b)",
-        three: "var(--color-c)",
-        four: "var(--color-d)",
-        "primary-bg": "var(--background-primary)",
-        "secondary-bg": "var(--background-sec)",
-        "primary-text": "var(--color-text-primary)",
-        "secondary-text": "var(--color-text-sec)",
-      },
       blur: {
         xs: "2px",
         x: {

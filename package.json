@@ -38,6 +38,7 @@
     "buffer": "^6.0.3",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
+    "cssnano": "^5.1.5",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "18.2.1",
     "eslint-config-prettier": "^6.15.0",

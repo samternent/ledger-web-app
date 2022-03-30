@@ -49,6 +49,9 @@
             <router-link alt="Edit" :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-outline btn-sm mr-2">
               Edit
             </router-link>
+            <router-link alt="Edit" :to="`/l/${id}/${activeBranch.id}/data`" class="btn btn-ghost btn-sm mr-2">
+              Data
+            </router-link>
           </div>
         </div>
         <div v-if="editorContent" class="flex-1 flex my-4">

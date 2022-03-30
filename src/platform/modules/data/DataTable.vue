@@ -14,10 +14,6 @@
           <th class="sticky top-0 z-20 flex items-center">
             <div class="flex flex-col">
               <input placeholder="Name" class="input input-sm" />
-              <select value="Text" class="input input-sm mt-2">
-                <option>Text</option>
-                <option>Number</option>
-              </select>
             </div>
             <button class="btn btn-circle btn-sm btn-ghost btn-secondary ml-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

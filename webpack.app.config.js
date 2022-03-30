@@ -50,6 +50,11 @@ module.exports = merge(webpackBase, {
                   require("@fullhuman/postcss-purgecss")({
                     content: ["**/*.html", "**/*.vue"],
                     css: ["**/*.css"],
+                    defaultExtractor: (content) =>
+                      content.match(/[\w-:./]+(?<!:)/g) || [],
+                  }),
+                  require("cssnano")({
+                    preset: "default",
                   }),
                 ],
               },
