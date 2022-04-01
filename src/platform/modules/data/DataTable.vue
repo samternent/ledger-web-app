@@ -11,15 +11,15 @@
           </th>
           
           <!-- LOOP DATA in TH -->
-          <th class="sticky top-0 z-20 flex items-center">
-            <div class="flex flex-col">
-              <input placeholder="Name" class="input input-sm" />
+          <th class="sticky top-0 z-20">
+            <div class="flex items-center">
+              DataType
+              <button class="btn btn-circle btn-sm btn-ghost btn-secondary ml-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
             </div>
-            <button class="btn btn-circle btn-sm btn-ghost btn-secondary ml-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
           </th>
 
 
@@ -38,10 +38,9 @@
           </th>
           <!-- LOOP DATA in TD -->
 
-          <td>
+          <td class="z-0">
           </td>
           <th>
-            <button class="btn btn-ghost btn-xs">details</button>
           </th>
         </tr>
       </tbody>

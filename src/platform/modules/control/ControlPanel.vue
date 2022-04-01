@@ -43,10 +43,10 @@
           Commit
         </span> 
         <span
-          @click="activeViewRight = 'save'"
+          @click="activeViewRight = 'encrypt'"
           class="tab tab-lifted"
-          :class="{ 'tab-active': activeViewRight === 'save'}">
-          Save
+          :class="{ 'tab-active': activeViewRight === 'encrypt'}">
+          Encrypt
         </span> 
       </div>
       <div class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2" v-if="activeViewRight === 'commit'">
@@ -73,48 +73,56 @@
         </div>
       </div>
       
-      <div class="flex-1 overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'save'">
-        <div class="flex justify-between px-2 items-center">
+      <div class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'encrypt'">
+        <div class="flex flex-1 justify-between px-2 items-center">
           <textarea
-            class="textarea textarea-bordered textarea-xs my-2 mr-4 bg-base-100 rounded flex-1"
+            class="textarea textarea-bordered textarea-xs my-2 bg-base-100 rounded flex-1"
             :class="{ 'textarea-error': openPGPKeyError }"
             placeholder="Encrypt for OpenPGP Key"
             v-model="openPGPPublicKey"
           />
         </div>
-        <div class="flex justify-between px-2 items-center">
+        <div class="divider divider-horizontal">OR</div>
+        <div class="flex flex-col justify-between px-2 items-center">
           <input
             type="password"
-            class="input input-bordered input-sm my-2 mr-4 bg-base-100 rounded flex-1"
+            class="input input-bordered input-sm my-2 bg-base-100 rounded flex-1"
             placeholder="Password Protect"
             v-model="password"
           />
           <input
             type="password"
-            class="input input-bordered input-sm my-2 mr-4 bg-base-100 rounded flex-1"
+            class="input input-bordered input-sm my-2 bg-base-100 rounded flex-1"
             placeholder="Confirm Password"
             v-model="confirmPassword"
           />
         </div>
-        <div class="flex w-full justify-end px-4 py-2">
-          <div v-if="encryptedData">
-            <span class="text-xs mr-4">Password Encrypted</span>
-            <DownloadButton :file-name="`${ledger.id}.cryp`" :data="encryptedData">
-              <span class="mr-1">Encrypt & Save</span>
-            </DownloadButton>
-          </div>
-          <div v-else-if="openPGPEncryptedData">
-            OpenPGP Encrypted
-            <DownloadButton :file-name="`${ledger.id}.pgp`" :data="openPGPEncryptedData">
-              <span class="mr-1">Encrypt & Save</span>
-            </DownloadButton>
-          </div>
-          <div v-else>
-            <span class="text-xs mr-4">Unencrypted</span>
-            <DownloadButton :file-name="`${ledger.id}.json`" :data="JSON.stringify(ledger)">
-              <span class="mr-1">Save</span>
-            </DownloadButton>
-          </div>
+      </div>
+    
+      <div class="flex w-full justify-end px-4 py-2">
+        <div v-if="encrypting">
+          <span class="text-xs mr-4">Password Encrypted</span>
+          <button class="btn btn-disabled btn-sm" disabled>
+            Encrypting...
+          </button>
+        </div>
+        <div v-else-if="encryptedData">
+          <span class="text-xs mr-4">Password Encrypted</span>
+          <DownloadButton :file-name="`${ledger.id}.cryp`" :data="encryptedData">
+            <span class="mr-1">Save Encrypted</span>
+          </DownloadButton>
+        </div>
+        <div v-else-if="openPGPEncryptedData">
+          OpenPGP Encrypted
+          <DownloadButton :file-name="`${ledger.id}.pgp`" :data="openPGPEncryptedData">
+            <span class="mr-1">Save Encrypted</span>
+          </DownloadButton>
+        </div>
+        <div v-else>
+          <span class="text-xs mr-4">Unencrypted</span>
+          <DownloadButton :file-name="`${ledger.id}.json`" :data="JSON.stringify(ledger)">
+            <span class="mr-1">Save</span>
+          </DownloadButton>
         </div>
       </div>
     </div>
@@ -166,6 +174,7 @@ export default {
 
     const encryptedData = ref(null);
     const openPGPEncryptedData = ref(null);
+    const encrypting = ref(false);
     
     watchThrottled(
       [
@@ -179,9 +188,17 @@ export default {
         _ledger,
       ]) => {
         if (_password && _confirmPassword && _password === _confirmPassword) {
-          encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
+          try {
+            encrypting.value = true;
+            encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
+            encrypting.value = false;
+          } catch (err) {
+            encryptedData.value = null;
+            encrypting.value = false;
+          }
         } else {
           encryptedData.value = null;
+          encrypting.value = false;
         }
       },
       { throttle: 500 }
@@ -191,13 +208,17 @@ export default {
         openPGPKeyError.value = false;
         if (_openPGPPublicKey && _ledger) {
           try {
+            encrypting.value = true;
             openPGPEncryptedData.value = await encryptDataWithPGP(JSON.stringify(_ledger), _openPGPPublicKey);
+            encrypting.value = false;
           } catch(e) {
             openPGPEncryptedData.value = null;
             openPGPKeyError.value = true;
+            encrypting.value = false;
           }
         } else {
           openPGPEncryptedData.value = null;
+          encrypting.value = false;
         }
       },
       { throttle: 500 }
@@ -219,6 +240,7 @@ export default {
       confirmPassword,
       openPGPPublicKey,
       openPGPKeyError,
+      encrypting,
     };
   },
 };

@@ -37,7 +37,7 @@
   </Teleport>
   <div class="flex-1 bg-base-100 flex flex-col overflow-auto">
     <div class="font-light flex justify-between flex-col flex-1 overflow-auto">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center p-2">
         <div class="text-2xl py-2 lg:text-3xl line-clamp-1">
           {{ activeBranch.name }}
         </div>
@@ -54,11 +54,11 @@
   </div>
   <Teleport to="#RightPanelContent">
     <div class="flex flex-col">
-      <input class="input input-sm" type="text" v-model="newDataFieldName" placeholder="Name" />
-      <select class="select w-full max-w-xs" v-model="newDataFieldType">
+      <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
+      <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
           <option>text</option>
       </select>
-      <button lass="btn" @click="addDataType">
+      <button class="btn" @click="addDataType">
         Add
       </button>
     </div>
@@ -78,11 +78,19 @@ export default {
     const { content, activeBranch, activeParent, id } =
       useTree();
     const router = useRouter();
+    const newDataFieldName = shallowRef('');
+    const newDataFieldType = shallowRef('text');
+
+
+    function addDataType() {
+
+    }
 
     return {
       activeBranch,
       content,
       activeParent,
+      addDataType,
       id,
       async closeDataEditor() {
         router.push(`/l/${id.value}/${activeBranch.value.id}`);
