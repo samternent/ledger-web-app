@@ -20,6 +20,8 @@ export function provideTree() {
   const children = shallowRef([]);
   const trunk = shallowRef({});
   const content = shallowRef({});
+  const dataTypes = shallowRef([]);
+  const branchData = shallowRef([]);
   const id = computed(() => ledger.value?.id.slice(0, 6));
 
   function getBranch(id) {
@@ -61,6 +63,17 @@ export function provideTree() {
     });
   }
 
+  function getDataTypes(id) {
+    return getCollection("dataTypes").find({
+      "data.parent": id,
+    });
+  }
+  function getBranchData(id) {
+    return getCollection("branchData").find({
+      "data.parent": id,
+    });
+  }
+
   function setActiveBranchById(id) {
     if (getBranch(id)) {
       activeBranchId.value = id;
@@ -84,6 +97,13 @@ export function provideTree() {
       }
 
       content.value = getContent(activeBranchId.value)?.data;
+      dataTypes.value = getDataTypes(activeBranchId.value)?.map(
+        ({ data }) => data
+      );
+      branchData.value = getBranchData(activeBranchId.value)?.map(
+        ({ data }) => data
+      );
+      console.log(branchData.value);
       if (activeBranch.value?.name) {
         activeParent.value = getBranch(activeBranch.value.parent)?.data;
       }
@@ -115,6 +135,17 @@ export function provideTree() {
     );
   }
 
+  async function addBranchData(data) {
+    return addRecord(
+      {
+        action: "create",
+        parent: activeBranchId.value,
+        ...data,
+      },
+      "branchData"
+    );
+  }
+
   async function updateContent(content) {
     return updateRecord(
       {
@@ -123,6 +154,17 @@ export function provideTree() {
         content,
       },
       "content"
+    );
+  }
+
+  async function addDataType(dataType) {
+    return addRecord(
+      {
+        action: "add",
+        ...dataType,
+        parent: activeBranchId.value,
+      },
+      "dataTypes"
     );
   }
 
@@ -136,12 +178,16 @@ export function provideTree() {
     getBranch,
     getContent,
     getChildren,
+    addDataType,
+    addBranchData,
     activeBranch,
     activeParent,
     children,
     trunk,
     content,
     id,
+    dataTypes,
+    branchData,
   };
 
   window.useTreeObservables = useTreeObservables;

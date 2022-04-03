@@ -1,57 +1,62 @@
 <template>
-  <div class="w-full flex-1 overflow-auto">
-    <table class="table w-full">
+  <div class="w-full flex-1 overflow-auto h-full flex">
+    <table class="table table-zebra w-full h-full">
       <!-- head -->
       <thead>
         <tr>
-          <th class="sticky top-0 z-20">
-            <label>
-              <input type="checkbox" class="checkbox">
-            </label>
-          </th>
-          
           <!-- LOOP DATA in TH -->
           <th class="sticky top-0 z-20">
-            <div class="flex items-center">
-              DataType
-              <button class="btn btn-circle btn-sm btn-ghost btn-secondary ml-2">
+            <div class="flex items-center block">
+              ID
+            </div>
+          </th>
+          <th class="sticky top-0" v-for="header in headers" :key="header.name">
+            <div class="flex items-center block">
+              {{ header.name }}
+              <!-- <button class="btn btn-circle btn-sm btn-ghost btn-secondary ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </button>
+              </button> -->
             </div>
           </th>
 
 
-          <th class="sticky top-0 z-10 text-right">
-            <button class="btn btn-sm btn-primary">+</button>
+          <th class="sticky top-0 text-right">
+            <button class="btn btn-sm btn-ghost" @click="isRightPanelExpanded = true">
+            +</button>
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="">
         <!-- row 1 -->
-        <tr class="hover" v-for="i in Array(10)" :key="i">
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox">
-            </label>
-          </th>
+        <tr class="hover h-16" v-for="row in rows" :key="row.id">
           <!-- LOOP DATA in TD -->
-
-          <td class="z-0">
+          <th>
+            {{ row.id }}
+          </th>
+          <td v-for="header in headers" :key="header.name">
+            {{ row[header.id] }}
           </td>
           <th>
           </th>
         </tr>
+        <tr></tr>
       </tbody>
       <!-- foot -->
       <tfoot>
         <tr>
-          <th class="sticky bottom-0 left-0"></th>
           <!-- LOOP DATA in TH -->
-          <th class="sticky bottom-0 text-center">
+          <th class="sticky bottom-0">
+            Add
           </th>
-          <th class="sticky bottom-0 text-center">
+          <th class="sticky bottom-0" v-for="header in headers" :key="header.name">
+            <input class="input input-sm input-bordered" :type="header.type" :placeholder="header.name" v-model="newDataRow[header.id]" />
+          </th>
+          <th class="sticky bottom-0">
+            <div class="flex justify-end">
+              <button class="btn btn-sm btn-success" @click="saveDataRow">Save</button>
+            </div>
           </th>
         </tr>
       </tfoot>
@@ -59,3 +64,36 @@
     </table>
   </div>
 </template>
+<script>
+import { ref } from "vue";
+import { useAppShell } from '@/platform/composables/useAppShell';
+
+export default {
+  props: {
+    headers: {
+      type: Array,
+      default: () => ([]),
+    },
+    rows: {
+      type: Array,
+      default: () => ([]),
+    },
+  },
+  setup(props, { emit }) {
+    const { isRightPanelExpanded } = useAppShell();
+    const newDataRow = ref({});
+
+    function saveDataRow() {
+      emit('addRow', newDataRow.value);
+      newDataRow.value = {};
+    };
+
+
+    return {
+      isRightPanelExpanded,
+      newDataRow,
+      saveDataRow,
+    };
+  },
+};
+</script>

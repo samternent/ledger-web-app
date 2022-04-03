@@ -36,7 +36,7 @@
     </div>
   </Teleport>
   <div class="flex-1 bg-base-100 flex flex-col overflow-auto">
-    <div class="font-light flex justify-between flex-col flex-1 overflow-auto">
+    <div class="font-light flex justify-between flex-col flex-1 overflow-auto relative">
       <div class="flex justify-between items-center p-2">
         <div class="text-2xl py-2 lg:text-3xl line-clamp-1">
           {{ activeBranch.name }}
@@ -47,8 +47,8 @@
           </button>
         </div>
       </div>
-      <div class="flex-1 flex overflow-auto">
-        <DataTable />
+      <div class="flex-1 flex overflow-auto absolute right-0 left-0 top-16 bottom-0">
+        <DataTable :headers="headers" @add-row="addRow" :rows="branchData" />
       </div>
     </div>
   </div>
@@ -56,16 +56,20 @@
     <div class="flex flex-col">
       <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
       <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
-          <option>text</option>
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="date">Date</option>
+          <option value="color">Colour</option>
       </select>
-      <button class="btn" @click="addDataType">
+      <button class="btn" @click="handleAddDataType">
         Add
       </button>
     </div>
   </Teleport>
 </template>
 <script>
-import { shallowRef, watchEffect } from "vue";
+import { shallowRef, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useTree } from "@/platform/composables/useTree";
 import DataTable from "@/platform/modules/data/DataTable.vue";
@@ -75,23 +79,39 @@ export default {
     DataTable,
   },
   setup() {
-    const { content, activeBranch, activeParent, id } =
+    const { content, activeBranch, activeParent, id, addDataType, dataTypes, addBranchData, branchData } =
       useTree();
     const router = useRouter();
     const newDataFieldName = shallowRef('');
     const newDataFieldType = shallowRef('text');
 
+    const headers = computed(() => {
+      return dataTypes.value;
+    });
 
-    function addDataType() {
+    async function handleAddDataType() {
+      await addDataType({ 
+        name: newDataFieldName.value,
+        type: newDataFieldType.value,
+      });
+      newDataFieldName.value = "";
+    }
 
+    async function addRow(data) {
+      await addBranchData(data);
     }
 
     return {
       activeBranch,
       content,
       activeParent,
-      addDataType,
+      handleAddDataType,
+      newDataFieldName,
+      newDataFieldType,
+      headers,
       id,
+      addRow,
+      branchData,
       async closeDataEditor() {
         router.push(`/l/${id.value}/${activeBranch.value.id}`);
       },

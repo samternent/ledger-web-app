@@ -25,7 +25,7 @@
           <div class="text-sm">
             <span class="text-primary font-bold mr-1">$</span
             ><span>{{ record.collection }}</span
-            >: {{ record.data.name || record.data.content }}
+            >: {{ record.data.name || record.data.content || record.data.data?.name }}
           </div>
         </li>
       </ul>
