@@ -30,15 +30,27 @@
       </thead>
       <tbody class="">
         <!-- row 1 -->
-        <tr class="hover h-16" v-for="row in rows" :key="row.id">
+        <tr class="hover h-16 group" v-for="row in rows" :key="row.id">
           <!-- LOOP DATA in TD -->
           <th>
             {{ row.id }}
           </th>
           <td v-for="header in headers" :key="header.name">
-            {{ row[header.id] }}
+            <input v-if="updatedRow.id === row.id" v-model="updatedRow[header.id]" class="input" :type="header.type" :value="row[header.id]">
+            <span v-else>{{ row[header.id] }}</span>
           </td>
-          <th>
+          <th class="text-right">
+            <button v-if="updatedRow.id === row.id" class="btn btn-sm btn-success" @click="updateRow">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <!-- Save -->
+            </button>
+            <button v-else class="btn btn-ghost btn-sm btn-circle" @click="editRow(row)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-40 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
           </th>
         </tr>
         <tr></tr>
@@ -82,10 +94,20 @@ export default {
   setup(props, { emit }) {
     const { isRightPanelExpanded } = useAppShell();
     const newDataRow = ref({});
+    const updatedRow = ref({});
 
     function saveDataRow() {
       emit('addRow', newDataRow.value);
       newDataRow.value = {};
+    };
+
+    function updateRow() {
+      emit('addRow', updatedRow.value);
+      updatedRow.value = {};
+    };
+
+    function editRow(rowData) {
+      updatedRow.value = rowData;
     };
 
 
@@ -93,6 +115,9 @@ export default {
       isRightPanelExpanded,
       newDataRow,
       saveDataRow,
+      updatedRow,
+      updateRow,
+      editRow,
     };
   },
 };

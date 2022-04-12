@@ -1,8 +1,8 @@
 <template>
-  <div class="form-control">
+  <div>
     <label class="input-group input-group-sm">
       <span>https://</span>
-      <input v-model="url" type="text" placeholder="www.concords.app/ledgers/terms" class="input input-bordered input-sm">
+      <input v-model="url" type="text" placeholder="www.concords.app/ledgers/terms" class="input input-bordered input-sm w-full">
     </label>
     <button @click="load" class="btn btn-primary btn-sm mt-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

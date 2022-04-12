@@ -2,7 +2,7 @@
   <div id="AppShell" class="flex h-sceen w-screen bg-base-100">
     <!-- Fixed responsive sidenav -->
     <section id="SideNav" class="flex">
-      <nav class="w-16 bg-base-300 h-full z-50 shadow-lg">
+      <nav class="w-16 bg-base-300 h-full z-50 border-base-100 border-r-2 shadow">
         <slot name="side-nav" />
       </nav>
     </section>
@@ -12,14 +12,14 @@
       <section
         id="TopFixedPanel"
         v-if="$route.meta.hasTopPanel"
-        class="bg-base-300 h-14 items-center flex w-full shadow z-40"
+        class="bg-base-300 h-14 items-center flex w-full border-base-300 border-b z-40"
       ></section>
 
       <!-- Main Content area -->
       <main class="flex-1 overflow-auto flex">
         <!-- Left Fixed Panel -->
         <div
-          class="bg-base-200 relative flex border-r border-base-300 transition-all"
+          class="bg-base-200 relative flex transition-all"
           :class="isLeftPanelExpanded ? 'w-64' : 'w-10'"
           v-if="$route.meta.hasLeftPanel"
         >
@@ -54,10 +54,12 @@
           />
         </div>
 
-        <slot />
+        <div class="border-r border-l border-base-300 flex flex-1">
+          <slot />
+        </div>
 
         <div
-          class="bg-base-200 transition-all relative flex flex-col border-l border-base-300"
+          class="bg-base-200 transition-all relative flex flex-col"
           :class="isRightPanelExpanded ? 'w-64' : 'w-10'"
           v-if="$route.meta.hasRightPanel"
         >
@@ -95,12 +97,12 @@
       <!-- Bottom expandable panel -->
       <section
         id="BottomPanel"
-        class="bg-base-300 flex flex-col transition-all shadow z-40"
+        class="bg-base-300 flex flex-col transition-all border-t border-base-100 z-40"
         :class="isBottomPanelExpanded ? 'h-64' : 'h-10'"
         v-if="$route.meta.hasBottomPanel"
       >
         <!-- Panel Control + Indicator -->
-        <div class="flex justify-between py-1 px-2 shadow">
+        <div class="flex justify-between py-1 px-2 border-b border-base-100">
           <div class="flex-1" id="BottomPanelBanner" />
 
           <div class="flex">

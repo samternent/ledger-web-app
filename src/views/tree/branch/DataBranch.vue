@@ -86,6 +86,7 @@ export default {
     const newDataFieldType = shallowRef('text');
 
     const headers = computed(() => {
+      console.log(dataTypes.value);
       return dataTypes.value;
     });
 

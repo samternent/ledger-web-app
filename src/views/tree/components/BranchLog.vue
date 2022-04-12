@@ -3,7 +3,22 @@
     <div v-if="pending.length" class="my-2">
       <h2 class="font-medium font-lg py-2">Pending</h2>
       <template v-for="record in pending" :key="record.id">
-        <div v-if="record.data.id === $route.params.branch">
+        <div v-if="record.data.id === $route.params.branch || (['branchData'  , 'dataTypes'].includes(record.collection) && record.data.parent === $route.params.branch)">
+          <!-- <div v-if="record.collection === 'branches'">
+            <p v-html="record.data.content" />
+          </div>
+          <div v-if="record.collection === 'content'">
+            <p v-html="record.data.content" />
+          </div>
+          <div v-if="record.collection === 'dataBranch'">
+            {{ record.data }}
+          </div>
+          <div v-if="record.collection === 'dataType'">
+            {{ record.data }}
+          </div> -->
+          <div>
+            <span class="capitalize text-xs opacity-70">{{ formatActionType(record) }}</span>
+          </div>
           <div class="text-sm flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -13,20 +28,32 @@
         </div>
       </template>
     </div>
-    <h2 class="font-medium font-lg py-2">Page History</h2>
     <div v-if="Object.keys(chain).length">
+      <h2 class="font-medium font-lg py-2">Page History</h2>
       <div class="" v-for="hash in Object.keys(chain)" :key="hash">
         <template v-for="record in chain[hash].records" :key="record.id">
-          <div v-if="record.data.id === $route.params.branch">
+          <div v-if="record.data.id === $route.params.branch || (['branchData'  , 'dataTypes'].includes(record.collection) && record.data.parent === $route.params.branch)">
+            <!-- <div v-if="record.collection === 'branches'">
+              <p v-html="record.data.content" />
+            </div>
+            <div v-if="record.collection === 'content'">
+              <p v-html="record.data.content" />
+            </div>
+            <div v-if="record.collection === 'dataBranch'">
+              {{ record.data }}
+            </div>
+            <div v-if="record.collection === 'dataType'">
+              {{ record.data }}
+            </div> -->
+            <div>
+              <span class="capitalize text-xs opacity-70">{{ formatActionType(record) }}</span>
+            </div>
             <div class="text-sm flex items-center">
               <BlockVerify class="mr-2" :block="chain[hash]" :difficulty="ledger.difficulty" />
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div class="truncate">{{ formatDate(record.timestamp) }}</div>
-            </div>
-            <div>
-              <span class="capitalize text-xs opacity-70">{{ formatActionType(record) }}</span>
             </div>
           </div>
         </template>
@@ -69,6 +96,12 @@ export default {
       }
       if (record.collection === 'branches') {
         return `Page ${record.data.action}d`;
+      }
+      if (record.collection === 'dataType') {
+        return `Data Type ${record.data.action}d`;
+      }
+      if (record.collection === 'branchData') {
+        return `Data ${record.data.action}d`;
       }
     }
 

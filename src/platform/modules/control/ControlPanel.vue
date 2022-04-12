@@ -108,19 +108,19 @@
         </div>
         <div v-else-if="encryptedData">
           <span class="text-xs mr-4">Password Encrypted</span>
-          <DownloadButton :file-name="`${ledger.id}.cryp`" :data="encryptedData">
+          <DownloadButton :file-name="`${ledger.id}.ledger.pwd`" :data="encryptedData">
             <span class="mr-1">Save Encrypted</span>
           </DownloadButton>
         </div>
         <div v-else-if="openPGPEncryptedData">
           OpenPGP Encrypted
-          <DownloadButton :file-name="`${ledger.id}.pgp`" :data="openPGPEncryptedData">
+          <DownloadButton :file-name="`${ledger.id}.ledger.pgp`" :data="openPGPEncryptedData">
             <span class="mr-1">Save Encrypted</span>
           </DownloadButton>
         </div>
         <div v-else>
           <span class="text-xs mr-4">Unencrypted</span>
-          <DownloadButton :file-name="`${ledger.id}.json`" :data="JSON.stringify(ledger)">
+          <DownloadButton :file-name="`${ledger.id}.ledger.json`" :data="JSON.stringify(ledger)">
             <span class="mr-1">Save</span>
           </DownloadButton>
         </div>
@@ -190,7 +190,8 @@ export default {
         if (_password && _confirmPassword && _password === _confirmPassword) {
           try {
             encrypting.value = true;
-            encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
+            encryptedData.value = `-----BEGIN PASSWORD ENCRYPTED MESSAGE-----
+            ${await encryptDataWithPassword(JSON.stringify(_ledger), _password)}\n\n-----END PASSWORD ENCRYPTED MESSAGE-----`;
             encrypting.value = false;
           } catch (err) {
             encryptedData.value = null;

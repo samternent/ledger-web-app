@@ -56,6 +56,20 @@ export function provideTree() {
       }),
     ];
   }
+  function searchDataTypes(searchTerm) {
+    return [
+      ...getCollection("dataTypes").find({
+        "data.types.name": { $regex: new RegExp(searchTerm, "i") },
+      }),
+    ];
+  }
+  function searchData(searchTerm) {
+    return [
+      ...getCollection("branchData").find({
+        "data.content": { $regex: new RegExp(searchTerm, "i") },
+      }),
+    ];
+  }
 
   function getContent(id) {
     return getCollection("content").findOne({
@@ -97,13 +111,13 @@ export function provideTree() {
       }
 
       content.value = getContent(activeBranchId.value)?.data;
-      dataTypes.value = getDataTypes(activeBranchId.value)?.map(
-        ({ data }) => data
-      );
+      dataTypes.value = getDataTypes(activeBranchId.value)?.map(({ data }) => ({
+        id: data.id,
+        ...data.types,
+      }));
       branchData.value = getBranchData(activeBranchId.value)?.map(
         ({ data }) => data
       );
-      console.log(branchData.value);
       if (activeBranch.value?.name) {
         activeParent.value = getBranch(activeBranch.value.parent)?.data;
       }
@@ -161,7 +175,7 @@ export function provideTree() {
     return addRecord(
       {
         action: "add",
-        ...dataType,
+        types: dataType,
         parent: activeBranchId.value,
       },
       "dataTypes"
@@ -175,6 +189,8 @@ export function provideTree() {
     updateContent,
     searchBranches,
     searchContent,
+    searchData,
+    searchDataTypes,
     getBranch,
     getContent,
     getChildren,

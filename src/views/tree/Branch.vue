@@ -58,10 +58,10 @@
           <div v-html="editorContent" class="prose text-base-content" />
         </div>
         <div v-else class="mx-auto text-center flex flex-col my-8">
-          <VoidSVG class="text-accent w-64 mx-auto opacity-90" />
-          <h2 class="text-xl font-light opacity-80 my-8">
+          <!-- <VoidSVG class="text-accent w-64 mx-auto opacity-90" /> -->
+          <!-- <h2 class="text-3xl text-neutral font-medium opacity-80 my-8">
             Add some content to this page
-          </h2>
+          </h2> -->
         </div>
       </div>
       <Teleport to="#RightPanelContent">
@@ -101,6 +101,8 @@ export default {
       children,
       searchBranches,
       searchContent,
+      searchDataTypes,
+      searchData,
       trunk,
       content,
       updateContent,
@@ -125,9 +127,14 @@ export default {
 
     const searchResults = computed(() => {
       if (!searchTerm.value) return [];
+      console.log(searchDataTypes(searchTerm.value));
       return [
         ...searchBranches(searchTerm.value).map(({ data }) => ({
           ...data,
+          parent: getBranch(data.parent)?.data,
+        })).slice(0, 6),
+        ...searchDataTypes(searchTerm.value).map(({ data }) => ({
+          ...data.types,
           parent: getBranch(data.parent)?.data,
         })).slice(0, 6),
         ...searchContent(searchTerm.value).map(({ data }) => {

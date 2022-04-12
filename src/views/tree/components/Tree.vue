@@ -11,9 +11,9 @@
       </button> 
       <router-link
         :alt="branch.name"
-        class="block w-full truncate text-sm font-light"
+        class="block w-full truncate text-sm font-light pl-2 flex items-center"
         :class="{ 'text-xl': !level }"
-        active-class="text-secondary"
+        active-class="font-bold"
         :to="`/l/${id}/${branch.id}`">
         {{ branch.name }}
       </router-link>
