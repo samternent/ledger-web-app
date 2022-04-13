@@ -190,8 +190,7 @@ export default {
         if (_password && _confirmPassword && _password === _confirmPassword) {
           try {
             encrypting.value = true;
-            encryptedData.value = `-----BEGIN PASSWORD ENCRYPTED MESSAGE-----
-            ${await encryptDataWithPassword(JSON.stringify(_ledger), _password)}\n\n-----END PASSWORD ENCRYPTED MESSAGE-----`;
+            encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
             encrypting.value = false;
           } catch (err) {
             encryptedData.value = null;

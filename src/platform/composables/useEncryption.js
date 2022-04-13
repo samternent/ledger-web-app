@@ -54,7 +54,7 @@ export default function useEncryption() {
       buff.set(iv, salt.byteLength);
       buff.set(encryptedContentArr, salt.byteLength + iv.byteLength);
       const base64Buff = buff_to_base64(buff);
-      return base64Buff;
+      return `-----BEGIN PASSWORD ENCRYPTED MESSAGE-----\n\n${base64Buff}\n\n-----END PASSWORD ENCRYPTED MESSAGE-----`;
     } catch (e) {
       console.log(`Error - ${e}`);
       return "";
@@ -69,7 +69,11 @@ export default function useEncryption() {
 
   async function decryptDataWithPassword(encryptedData, password) {
     try {
-      const encryptedDataBuff = base64_to_buf(encryptedData);
+      const strippedData = encryptedData
+        .replace("-----BEGIN PASSWORD ENCRYPTED MESSAGE-----", "")
+        .replace("-----END PASSWORD ENCRYPTED MESSAGE-----", "")
+        .trim();
+      const encryptedDataBuff = base64_to_buf(strippedData);
       const salt = encryptedDataBuff.slice(0, 16);
       const iv = encryptedDataBuff.slice(16, 16 + 12);
       const data = encryptedDataBuff.slice(16 + 12);
@@ -85,7 +89,7 @@ export default function useEncryption() {
       );
       return new TextDecoder().decode(decryptedContent);
     } catch (e) {
-      console.log(`Error - ${e}`);
+      console.error(e);
       return "";
     }
   }

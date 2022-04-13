@@ -57,8 +57,14 @@ export default {
     const openPGPPrivateKey = shallowRef(null);
 
     async function passwordDecrypt() {
-      const l = JSON.parse(await decryptDataWithPassword(rawLedger.value, password.value));
-      router.push(`/l/${l.id.slice(0,6)}`);
+      try {
+        const rawDecrypted = await decryptDataWithPassword(rawLedger.value, password.value);
+        const l = JSON.parse(rawDecrypted);
+        window.localStorage.setItem('ledger', rawDecrypted);
+        router.push(`/l/${l.id.slice(0,6)}`);
+      } catch(e) {
+        console.error(e);
+      }
     }
     async function openPGPDecrypt() {
       const l = JSON.parse(await decryptDataWithPGP(rawLedger.value, openPGPPrivateKey.value, password));
@@ -70,6 +76,7 @@ export default {
       try {
         const l = JSON.parse(raw);
         await loadLedger(l);
+        window.localStorage.setItem('ledger', raw);
         router.push(`/l/${l.id.slice(0,6)}`);
       } catch (err) {
         if (raw.includes('-----BEGIN PASSWORD ENCRYPTED MESSAGE-----')) {
@@ -85,6 +92,9 @@ export default {
       rawLedger,
       isPasswordEncrypted,
       isPGPEncrypted,
+      passwordDecrypt,
+      openPGPDecrypt,
+      password,
     };
   },
 };

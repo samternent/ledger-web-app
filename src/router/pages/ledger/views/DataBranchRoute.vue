@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 bg-base-100 flex flex-col overflow-auto">
-    <DataBranch v-if="loaded" />
+    <DataBranch v-if="loaded" :branch="$route.params.branch" />
   </div>
 </template>
 <script>

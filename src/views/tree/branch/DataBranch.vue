@@ -69,8 +69,8 @@
   </Teleport>
 </template>
 <script>
-import { shallowRef, computed } from "vue";
-import { useRouter } from "vue-router";
+import { shallowRef, computed, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useTree } from "@/platform/composables/useTree";
 import DataTable from "@/platform/modules/data/DataTable.vue";
 
@@ -79,14 +79,14 @@ export default {
     DataTable,
   },
   setup() {
-    const { content, activeBranch, activeParent, id, addDataType, dataTypes, addBranchData, branchData } =
+    const { content, activeBranch, setActiveBranchById, activeParent, id, addDataType, dataTypes, addBranchData, branchData } =
       useTree();
     const router = useRouter();
+    const route = useRoute();
     const newDataFieldName = shallowRef('');
     const newDataFieldType = shallowRef('text');
 
     const headers = computed(() => {
-      console.log(dataTypes.value);
       return dataTypes.value;
     });
 
@@ -101,6 +101,14 @@ export default {
     async function addRow(data) {
       await addBranchData(data);
     }
+
+    watch(
+      () => route.params.branch,
+      (_branch) => {
+        setActiveBranchById(_branch);
+      },
+      { immediate: true }
+    )
 
     return {
       activeBranch,
