@@ -38,7 +38,7 @@ const workspace = computed(() => {
     : null;
 });
 
-export default ({ identity: _identity, secret: _secret }) => {
+export default () => {
   function solidLogin() {
     login({
       oidcIssuer: oidcIssuer.value,
@@ -66,10 +66,6 @@ export default ({ identity: _identity, secret: _secret }) => {
           const arr = id.split("");
           const half = Math.floor(arr.length / 2);
           res({
-            identity: {
-              x: arr.splice(0, half).join(""),
-              y: arr.splice(-half).join(""),
-            },
             ...JSON.parse(e.target.result),
           });
         }

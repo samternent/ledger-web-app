@@ -106,28 +106,27 @@ export default function useEncryption() {
     const encrypted = await openpgp.encrypt({
       message: await openpgp.createMessage({ text: secretData }), // input as Message object
       encryptionKeys: publicKey,
-      signingKeys: privateKey, // optional
+      // signingKeys: privateKey, // optional
     });
     return encrypted;
   }
 
-  async function decryptDataWithPGP() {
-    // const message = await openpgp.readMessage({
-    //   armoredMessage: encrypted, // parse armored message
-    // });
-    // const { data: decrypted, signatures } = await openpgp.decrypt({
-    //   message,
-    //   verificationKeys: publicKey, // optional
-    //   decryptionKeys: privateKey,
-    // });
-    // console.log(decrypted); // 'Hello, World!'
-    // // check signature validity (signed messages only)
-    // try {
-    //   await signatures[0].verified; // throws on invalid signature
-    //   console.log("Signature is valid");
-    // } catch (e) {
-    //   throw new Error("Signature could not be verified: " + e.message);
-    // }
+  async function decryptDataWithPGP(encrypted) {
+    const message = await openpgp.readMessage({
+      armoredMessage: encrypted, // parse armored message
+    });
+    const privateKey = await openpgp.decryptKey({
+      privateKey: await openpgp.readPrivateKey({
+        armoredKey: privateKeyArmoured.value,
+      }),
+      passphrase: "password1",
+    });
+    const { data: decrypted } = await openpgp.decrypt({
+      message,
+      decryptionKeys: privateKey,
+    });
+    console.log(decrypted);
+    return decrypted;
   }
 
   return {

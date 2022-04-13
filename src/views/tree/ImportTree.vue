@@ -16,6 +16,7 @@
         <button class="btn btn-primary" @click="openPGPDecrypt">Open</button>
       </div>
       <div v-else class="flex flex-col">
+        <Solid class="mx-auto border border-base-300 rounded my-4 p-4" />
         <LoadFromFile @load="handleLoad">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
@@ -30,17 +31,20 @@
   </div>
 </template>
 <script>
-import { nextTick, shallowRef } from "vue";
+import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
 import { useLedger } from "@/platform/composables/useLedger";
 import useEncryption from "@/platform/composables/useEncryption";
 import LoadFromFile from '@/platform/components/LoadFromFile.vue';
 import LoadFromURL from '@/platform/components/LoadFromURL.vue';
+import Solid from '@/platform/modules/control/controls/Solid.vue';
+import { useIdentity } from "@/platform/composables/useIdentity";
 
 export default {
   components: {
     LoadFromFile,
     LoadFromURL,
+    Solid,
   },
   setup() {
     const {
@@ -49,6 +53,7 @@ export default {
     } = useLedger();
     const router = useRouter();
     const { decryptDataWithPassword, decryptDataWithPGP } = useEncryption();
+    const { privateKey } = useIdentity();
 
     const rawLedger = shallowRef(null);
     const isPasswordEncrypted = shallowRef(false);
@@ -67,7 +72,9 @@ export default {
       }
     }
     async function openPGPDecrypt() {
-      const l = JSON.parse(await decryptDataWithPGP(rawLedger.value, openPGPPrivateKey.value, password));
+      const rawDecrypted = await decryptDataWithPGP(rawLedger.value);
+      const l = JSON.parse(rawDecrypted);
+      window.localStorage.setItem('ledger', rawDecrypted);
       router.push(`/l/${l.id.slice(0,6)}`);
     }
 
@@ -82,7 +89,7 @@ export default {
         if (raw.includes('-----BEGIN PASSWORD ENCRYPTED MESSAGE-----')) {
           isPasswordEncrypted.value = true;
         } else if (raw.includes('-----BEGIN PGP MESSAGE-----')) {
-          isPGPEncrypted.value = true;
+          openPGPDecrypt();
         }
       }
     }

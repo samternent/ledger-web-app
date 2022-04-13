@@ -48,6 +48,15 @@
           :class="{ 'tab-active': activeViewRight === 'encrypt'}">
           Encrypt
         </span> 
+        <div class="indicator">
+          <span
+            @click="activeViewRight = 'solid'"
+            class="tab tab-lifted"
+            :class="{ 'tab-active': activeViewRight === 'solid'}">
+              <span class="indicator-item badge-xs badge badge-accent text-xs">new</span> 
+              <div class="place-items-center">Solid</div>
+          </span> 
+        </div>
       </div>
       <div class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2" v-if="activeViewRight === 'commit'">
         <textarea
@@ -98,31 +107,67 @@
           />
         </div>
       </div>
+
+      <div class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'solid'">
+        <Solid />
+      </div>
+      
     
       <div class="flex w-full justify-end px-4 py-2">
         <div v-if="encrypting">
-          <span class="text-xs mr-4">Password Encrypted</span>
           <button class="btn btn-disabled btn-sm" disabled>
             Encrypting...
           </button>
         </div>
-        <div v-else-if="encryptedData">
+        <div v-else-if="encryptedData" class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+          </svg>
           <span class="text-xs mr-4">Password Encrypted</span>
           <DownloadButton :file-name="`${ledger.id}.ledger.pwd`" :data="encryptedData">
-            <span class="mr-1">Save Encrypted</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="ml-2">Download</span>
           </DownloadButton>
+          <button v-if="!isSolidConnected" class="btn btn-success btn-sm ml-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="ml-2">Save</span>
+          </button>
         </div>
-        <div v-else-if="openPGPEncryptedData">
-          OpenPGP Encrypted
+        <div v-else-if="openPGPEncryptedData" class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span class="text-xs mr-4">OpenPGP Encrypted</span>
           <DownloadButton :file-name="`${ledger.id}.ledger.pgp`" :data="openPGPEncryptedData">
-            <span class="mr-1">Save Encrypted</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="ml-2">Download</span>
           </DownloadButton>
+          <button v-if="!isSolidConnected" class="ml-1 btn btn-success btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="ml-2">Save</span>
+          </button>
         </div>
-        <div v-else>
-          <span class="text-xs mr-4">Unencrypted</span>
+        <div v-else class="flex items-center">
+          <span class="text-xs mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+            Unencrypted
+          </span>
           <DownloadButton :file-name="`${ledger.id}.ledger.json`" :data="JSON.stringify(ledger)">
-            <span class="mr-1">Save</span>
+            <span >Download</span>
           </DownloadButton>
+          <button v-if="!isSolidConnected" class="ml-1 btn btn-success btn-sm">
+            <span>Save</span>
+          </button>
         </div>
       </div>
     </div>
@@ -135,11 +180,13 @@ import { useLedger } from "@/platform/composables/useLedger";
 import useEncryption from "@/platform/composables/useEncryption";
 import FullLog from "@/platform/modules/log/FullLog.vue";
 import DownloadButton from "@/platform/components/DownloadButton.vue";
+import Solid from './controls/Solid.vue';
 
 export default {
   components: {
     FullLog,
     DownloadButton,
+    Solid,
   },
   setup() {
     const activeView = ref(localStorage.getItem('consoleActiveView') || 'log');
