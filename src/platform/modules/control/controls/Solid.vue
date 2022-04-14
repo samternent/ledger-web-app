@@ -9,6 +9,11 @@
       </button>
     </div>
     <div v-else class="py-2">
+      <div v-if="isPasswordEncrypted">
+        This Ledger is password ecrypted.
+        <input class="input input-bordered" v-model="password" placeholder="Ledger password" />
+        <button class="btn btn-primary" @click="passwordDecrypt">Open</button>
+      </div>
       <div v-if="!ledgerList.length" class="flex flex-1 text-sec-text">
         No Saved Ledgers
       </div>
@@ -31,24 +36,72 @@
   </div>
 </template>
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, shallowRef } from 'vue';
+import { useRouter } from "vue-router";
 import { useSolid } from '@/platform/composables/useSolid';
+import { useLedger } from '@/platform/composables/useLedger';
+import useEncryption from '@/platform/composables/useEncryption';
 
 export default {
   setup(props, { emit }) {
     const { profile, logout, providers, getDataSet, login, hasSolidSession, handleSessionLogin, fetch, workspace, oidcIssuer } = useSolid();
     const ledgerList = ref([]);
+
+    const {
+      methods: { loadLedger },
+    } = useLedger();
+    const router = useRouter();
+    const { decryptDataWithPassword, decryptDataWithPGP } = useEncryption();
+
+    const rawLedger = shallowRef(null);
+    const isPasswordEncrypted = shallowRef(false);
+    const isPGPEncrypted = shallowRef(false);
+    const password = shallowRef(null);
+
+    async function passwordDecrypt() {
+      try {
+        const rawDecrypted = await decryptDataWithPassword(rawLedger.value, password.value);
+        const l = JSON.parse(rawDecrypted);
+        window.localStorage.setItem('ledger', rawDecrypted);
+        router.push(`/`);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    async function openPGPDecrypt() {
+      const rawDecrypted = await decryptDataWithPGP(rawLedger.value);
+      const l = JSON.parse(rawDecrypted);
+      window.localStorage.setItem('ledger', rawDecrypted);
+      router.push(`/`);
+    }
+
+    async function handleLoad(raw) {
+      rawLedger.value = raw;
+      try {
+        const l = JSON.parse(raw);
+        await loadLedger(l);
+        window.localStorage.setItem('ledger', raw);
+        router.push(`/l/${l.id.slice(0,6)}`);
+      } catch (err) {
+        if (raw.includes('-----BEGIN PASSWORD ENCRYPTED MESSAGE-----')) {
+          isPasswordEncrypted.value = true;
+        } else if (raw.includes('-----BEGIN PGP MESSAGE-----')) {
+          openPGPDecrypt();
+        }
+      }
+    }
+
     async function fetchLedgers() {
       const list = await getDataSet("ledger");
       ledgerList.value = Object.keys(list.graphs.default)
         .filter((key) => /[^\\]*\.(\w+)$/.test(key))
         .map((str) =>
-          str.split("\\").pop().split("/").pop().split(".").shift()
+          str.split("\\").pop().split("/").pop()
         );
     }
     async function fetchLedger(_id, b) {
-      const { chain, difficulty, id } = await fetch("ledger", _id);
-      emit('load', { pending_records: [], chain, difficulty, id });
+      const ledger = await fetch("ledger", _id);
+      handleLoad(ledger);
     }
     watch([hasSolidSession, workspace], ([_hasSolidSession, _workspace]) => {
       if (_hasSolidSession && _workspace) {
@@ -65,6 +118,9 @@ export default {
       providers,
       logout,
       profile,
+      passwordDecrypt,
+      isPasswordEncrypted,
+      password,
     };
   },
 }

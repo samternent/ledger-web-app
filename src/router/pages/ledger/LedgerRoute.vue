@@ -37,7 +37,7 @@ export default {
 
     const rawLedger = JSON.parse(localStorage.getItem("ledger"));
     if (rawLedger) {
-      loadTree(JSON.parse(localStorage.getItem("ledger")));
+      loadTree(rawLedger);
     } else {
       router.replace(`/l/create`);
     }

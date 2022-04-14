@@ -48,25 +48,22 @@ export default {
   },
   setup() {
     const {
-      ledger,
       methods: { loadLedger },
     } = useLedger();
     const router = useRouter();
     const { decryptDataWithPassword, decryptDataWithPGP } = useEncryption();
-    const { privateKey } = useIdentity();
 
     const rawLedger = shallowRef(null);
     const isPasswordEncrypted = shallowRef(false);
     const isPGPEncrypted = shallowRef(false);
     const password = shallowRef(null);
-    const openPGPPrivateKey = shallowRef(null);
 
     async function passwordDecrypt() {
       try {
         const rawDecrypted = await decryptDataWithPassword(rawLedger.value, password.value);
         const l = JSON.parse(rawDecrypted);
         window.localStorage.setItem('ledger', rawDecrypted);
-        router.push(`/l/${l.id.slice(0,6)}`);
+        router.push(`/`);
       } catch(e) {
         console.error(e);
       }
@@ -75,7 +72,7 @@ export default {
       const rawDecrypted = await decryptDataWithPGP(rawLedger.value);
       const l = JSON.parse(rawDecrypted);
       window.localStorage.setItem('ledger', rawDecrypted);
-      router.push(`/l/${l.id.slice(0,6)}`);
+      router.push(`/`);
     }
 
     async function handleLoad(raw) {

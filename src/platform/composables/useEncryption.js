@@ -73,6 +73,8 @@ export default function useEncryption() {
         .replace("-----BEGIN PASSWORD ENCRYPTED MESSAGE-----", "")
         .replace("-----END PASSWORD ENCRYPTED MESSAGE-----", "")
         .trim();
+
+
       const encryptedDataBuff = base64_to_buf(strippedData);
       const salt = encryptedDataBuff.slice(0, 16);
       const iv = encryptedDataBuff.slice(16, 16 + 12);
@@ -87,6 +89,7 @@ export default function useEncryption() {
         aesKey,
         data
       );
+
       return new TextDecoder().decode(decryptedContent);
     } catch (e) {
       console.error(e);

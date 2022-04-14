@@ -38,7 +38,7 @@ const workspace = computed(() => {
     : null;
 });
 
-const useSolidSymbol = Symbol('useSolid');
+const useSolidSymbol = Symbol("useSolid");
 
 export function provideSolid() {
   function solidLogin() {
@@ -50,26 +50,19 @@ export function provideSolid() {
 
   async function solidFetch(name, id) {
     try {
-      console.log(workspace);
-      const file = await getFile(
-        `${workspace.value}concords/${name}/${id}.json`,
-        {
-          fetch: fetch,
-        }
-      );
+      const file = await getFile(`${workspace.value}concords/${name}/${id}`, {
+        fetch: fetch,
+      });
 
       return new Promise((res, rej) => {
         async function onLoadFileHandler(e) {
           store[name] = {
             ...store[name],
-            [id]: JSON.parse(e.target.result),
+            [id]: e.target.result,
           };
 
           const arr = id.split("");
-          const half = Math.floor(arr.length / 2);
-          res({
-            ...JSON.parse(e.target.result),
-          });
+          res(e.target.result);
         }
         let fr = new FileReader();
         fr.onload = onLoadFileHandler;
@@ -80,18 +73,14 @@ export function provideSolid() {
     }
   }
 
-  async function solidWrite(name, type, details) {
-    const file = new File([JSON.stringify(details)], `${name}.json`, {
+  async function solidWrite(name, type = "ledger", details) {
+    const file = new File([details], `${name}`, {
       type: "application/json",
     });
-    await overwriteFile(
-      `${workspace.value}concords/${type}/${name}.json`,
-      file,
-      {
-        contentType: file.type,
-        fetch: fetch,
-      }
-    );
+    await overwriteFile(`${workspace.value}concords/${type}/${name}`, file, {
+      contentType: file.type,
+      fetch: fetch,
+    });
   }
 
   async function handleSessionLogin() {
