@@ -56,11 +56,7 @@
            <div class="flex flex-col w-full md:w-72 p-2">
               <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
               <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="checkbox">Checkbox</option>
-                  <option value="date">Date</option>
-                  <option value="color">Colour</option>
+                  <option v-for="type in staticDataTypes" :key="type" :value="type">{{ type }}</option>
               </select>
               <button class="btn" @click="handleAddDataType">
                 Add
@@ -74,11 +70,7 @@
     <div class="flex flex-col py-2">
       <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
       <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
-          <option value="text">Text</option>
-          <option value="number">Number</option>
-          <option value="checkbox">Checkbox</option>
-          <option value="date">Date</option>
-          <option value="color">Colour</option>
+          <option v-for="type in staticDataTypes" :key="`side_${type}`" :value="type">{{ type }}</option>
       </select>
       <button class="btn" @click="handleAddDataType">
         Add
@@ -91,6 +83,23 @@ import { shallowRef, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useTree } from "@/platform/composables/useTree";
 import DataTable from "@/platform/modules/data/DataTable.vue";
+
+const staticDataTypes = [
+"checkbox",
+"color",
+"date",
+"datetime-local",
+"email",
+"month",
+"number",
+"password",
+"range",
+"tel",
+"text",
+"time",
+"url",
+"week",
+];
 
 export default {
   components: {
@@ -142,6 +151,7 @@ export default {
       async closeDataEditor() {
         router.push(`/l/${id.value}/${activeBranch.value.id}`);
       },
+      staticDataTypes,
     };
   },
 };

@@ -8,10 +8,10 @@
         Connect to Solid Pod
       </button>
     </div>
-    <div v-else class="py-2 flex flex-1">
-      <div v-if="isPasswordEncrypted">
-        This Ledger is password ecrypted.
-        <input class="input input-bordered" v-model="password" placeholder="Ledger password" />
+    <div v-else class="py-2 flex flex-col flex-1">
+      <div v-if="isPasswordEncrypted" class="mx-auto my-2">
+        <p>This Ledger is password ecrypted.</p>
+        <input class="input input-bordered" type="password" v-model="password" placeholder="Ledger password" />
         <button class="btn btn-primary" @click="passwordDecrypt">Open</button>
       </div>
       <div v-if="!ledgerList.length" class="flex flex-1 text-sec-text">
