@@ -28,7 +28,9 @@ export default {
   setup() {
     const { publicKey, privateKey } = useIdentity();
 
-    const toggleDarkMode = shallowRef(window.localStorage.getItem('theme') === 'dark');
+    const theme = window.localStorage.getItem('theme');
+
+    const toggleDarkMode = shallowRef(!theme || theme !== 'dark' ? false : true);
 
     watchEffect(() => {
       if (toggleDarkMode.value) {
