@@ -48,12 +48,30 @@
         </div>
       </div>
       <div class="flex-1 flex overflow-auto absolute right-0 left-0 top-16 bottom-0">
+        <div v-if="headers.length">
         <DataTable :headers="headers" @add-row="addRow" :rows="branchData" />
+        </div>
+        <div v-else class="flex flex-col mx-auto items-center">
+          <h2 class="text-2xl my-8">Add a data type to get started</h2>
+           <div class="flex flex-col w-full md:w-72 p-2">
+              <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
+              <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
+                  <option value="text">Text</option>
+                  <option value="number">Number</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="date">Date</option>
+                  <option value="color">Colour</option>
+              </select>
+              <button class="btn" @click="handleAddDataType">
+                Add
+              </button>
+            </div>
+        </div>
       </div>
     </div>
   </div>
   <Teleport to="#RightPanelContent">
-    <div class="flex flex-col">
+    <div class="flex flex-col py-2">
       <input class="input input-bordered mb-2" type="text" v-model="newDataFieldName" placeholder="Name" />
       <select class="select mb-2 select-bordered w-full max-w-xs" v-model="newDataFieldType">
           <option value="text">Text</option>

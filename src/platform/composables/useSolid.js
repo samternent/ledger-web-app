@@ -12,6 +12,7 @@ import {
   getSolidDataset,
   getThing,
   overwriteFile,
+  deleteFile,
   getStringNoLocale,
 } from "@inrupt/solid-client";
 import { FOAF } from "@inrupt/vocab-common-rdf";
@@ -83,6 +84,10 @@ export function provideSolid() {
     });
   }
 
+  async function solidDelete(name, type = "ledger") {
+    await deleteFile(`${workspace.value}concords/${type}/${name}`, { fetch: fetch });
+  }
+
   async function handleSessionLogin() {
     await handleIncomingRedirect({
       url: window.location.href,
@@ -142,6 +147,7 @@ export function provideSolid() {
     hasSolidSession,
     fetch: solidFetch,
     write: solidWrite,
+    deleteLedger: solidDelete,
     getDataSet,
     webId,
     handleSessionLogin,
