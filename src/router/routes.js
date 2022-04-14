@@ -1,11 +1,11 @@
 import ledgerRoutes from "./pages/ledger/routes";
-import openPGPRoutes from "./pages/openPGP/routes";
+import accountRoutes from "./pages/account/routes";
 import settingsRoutes from "./pages/settings/routes";
 import infoRoutes from "./pages/info/routes";
 
 export default [
   ...ledgerRoutes,
-  ...openPGPRoutes,
+  ...accountRoutes,
   ...settingsRoutes,
   ...infoRoutes,
   {

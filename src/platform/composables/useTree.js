@@ -174,7 +174,7 @@ export function provideTree() {
   async function addDataType(dataType) {
     return addRecord(
       {
-        action: "add",
+        action: "create",
         types: dataType,
         parent: activeBranchId.value,
       },

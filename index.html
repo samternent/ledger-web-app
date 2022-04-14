@@ -26,8 +26,12 @@
     <meta name="color-scheme" content="dark light">
 
     <script>
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.dataset.theme = 'dark';
+      } else {
+        document.documentElement.dataset.theme = 'light';
+      }
       const theme = localStorage.getItem('theme');
-      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
       if (theme) {
         document.documentElement.dataset.theme = theme;
       }

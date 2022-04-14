@@ -120,8 +120,8 @@
       </div>
       <div>
         <router-link
-          alt="Manage OpenPGP"
-          to="/openPGP"
+          alt="Manage Account"
+          to="/account"
           class="flex items-center justify-center hover:bg-base-100 p-3"
         >
           <div class="avatar placeholder">
