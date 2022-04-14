@@ -1,4 +1,4 @@
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, provide, inject } from "vue";
 import {
   login,
   handleIncomingRedirect,
@@ -38,11 +38,13 @@ const workspace = computed(() => {
     : null;
 });
 
-export default () => {
+const useSolidSymbol = Symbol('useSolid');
+
+export function provideSolid() {
   function solidLogin() {
     login({
       oidcIssuer: oidcIssuer.value,
-      clientName: "concords.app",
+      clientName: "ledger.concords.app",
     });
   }
 
@@ -91,10 +93,6 @@ export default () => {
       }
     );
   }
-
-  onSessionRestore((url) => {
-    console.log(url);
-  });
 
   async function handleSessionLogin() {
     await handleIncomingRedirect({
@@ -148,7 +146,9 @@ export default () => {
     });
   }
 
-  return {
+  handleSessionLogin();
+
+  const solidInterface = {
     login: solidLogin,
     hasSolidSession,
     fetch: solidFetch,
@@ -166,4 +166,12 @@ export default () => {
       hasSolidSession.value = false;
     },
   };
-};
+
+  provide(useSolidSymbol, solidInterface);
+
+  return solidInterface;
+}
+
+export function useSolid() {
+  return inject(useSolidSymbol);
+}

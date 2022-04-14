@@ -32,7 +32,7 @@
 </template>
 <script>
 import { ref, watch } from 'vue';
-import useSolid from '@/platform/composables/useSolid';
+import { useSolid } from '@/platform/composables/useSolid';
 
 export default {
   setup(props, { emit }) {
@@ -55,7 +55,7 @@ export default {
         fetchLedgers();
       }
     }, { immediate: true });
-    handleSessionLogin();
+    
     return {
       login,
       hasSolidSession,

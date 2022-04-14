@@ -54,7 +54,7 @@
             class="tab tab-lifted"
             :class="{ 'tab-active': activeViewRight === 'solid'}">
               <span class="indicator-item badge-xs badge badge-accent text-xs">new</span> 
-              <div class="place-items-center">Solid</div>
+              <div class="place-items-center">Solid Pod</div>
           </span> 
         </div>
       </div>
@@ -130,7 +130,7 @@
             </svg>
             <span class="ml-2">Download</span>
           </DownloadButton>
-          <button v-if="!isSolidConnected" class="btn btn-success btn-sm ml-1">
+          <button v-if="hasSolidSession" class="btn btn-success btn-sm ml-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -148,7 +148,7 @@
             </svg>
             <span class="ml-2">Download</span>
           </DownloadButton>
-          <button v-if="!isSolidConnected" class="ml-1 btn btn-success btn-sm">
+          <button v-if="hasSolidSession" class="ml-1 btn btn-success btn-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -165,7 +165,7 @@
           <DownloadButton :file-name="`${ledger.id}.ledger.json`" :data="JSON.stringify(ledger)">
             <span >Download</span>
           </DownloadButton>
-          <button v-if="!isSolidConnected" class="ml-1 btn btn-success btn-sm">
+          <button v-if="hasSolidSession" class="ml-1 btn btn-success btn-sm">
             <span>Save</span>
           </button>
         </div>
@@ -181,6 +181,7 @@ import useEncryption from "@/platform/composables/useEncryption";
 import FullLog from "@/platform/modules/log/FullLog.vue";
 import DownloadButton from "@/platform/components/DownloadButton.vue";
 import Solid from './controls/Solid.vue';
+import { useSolid } from "@/platform/composables/useSolid";
 
 export default {
   components: {
@@ -193,6 +194,7 @@ export default {
     const activeViewRight = ref(localStorage.getItem('consoleActiveViewRight') || 'commit');
     const { ledger, api } = useLedger();
     const { encryptDataWithPGP, encryptDataWithPassword } = useEncryption();
+    const { hasSolidSession } = useSolid();
 
     const output = ref(null);
     const commitMessage = ref(null);
@@ -288,6 +290,7 @@ export default {
       openPGPPublicKey,
       openPGPKeyError,
       encrypting,
+      hasSolidSession,
     };
   },
 };
