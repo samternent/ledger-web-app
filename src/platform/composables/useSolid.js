@@ -85,7 +85,9 @@ export function provideSolid() {
   }
 
   async function solidDelete(name, type = "ledger") {
-    await deleteFile(`${workspace.value}concords/${type}/${name}`, { fetch: fetch });
+    await deleteFile(`${workspace.value}concords/${type}/${name}`, {
+      fetch: fetch,
+    });
   }
 
   async function handleSessionLogin() {

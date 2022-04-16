@@ -1,6 +1,7 @@
 import * as openpgp from "openpgp";
 import { useIdentity } from "@/platform/composables/useIdentity";
 import { encode } from "@/lib/ledger/utils";
+import { encrypt_with_x25519 } from "@kanru/rage-wasm";
 
 export default function useEncryption() {
   const { privateKey: privateKeyArmoured } = useIdentity();
@@ -74,7 +75,6 @@ export default function useEncryption() {
         .replace("-----END PASSWORD ENCRYPTED MESSAGE-----", "")
         .trim();
 
-
       const encryptedDataBuff = base64_to_buf(strippedData);
       const salt = encryptedDataBuff.slice(0, 16);
       const iv = encryptedDataBuff.slice(16, 16 + 12);
@@ -130,6 +130,14 @@ export default function useEncryption() {
     });
     console.log(decrypted);
     return decrypted;
+  }
+
+  async function encryptDataWithAge(secretData) {
+    const encrypted = await encrypt_with_x25519(
+      publicKey.value,
+      decode(secretData)
+    );
+    return encrypted;
   }
 
   return {
