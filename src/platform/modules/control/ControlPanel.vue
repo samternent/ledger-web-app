@@ -1,21 +1,27 @@
 <template>
-  <div v-if="ledger" class="flex h-full flex-1  bg-base-200">
+  <div v-if="ledger" class="flex h-full flex-1 bg-base-200">
     <div class="w-1/2 shadow flex flex-col pt-1 bg-base-200">
       <div class="tabs">
         <span
           @click="activeView = 'log'"
           class="tab tab-lifted"
-          :class="{ 'tab-active': activeView === 'log'}">
+          :class="{ 'tab-active': activeView === 'log' }"
+        >
           Log
-        </span> 
+        </span>
         <span
           @click="activeView = 'history'"
           class="tab tab-lifted"
-          :class="{ 'tab-active': activeView === 'history'}">
+          :class="{ 'tab-active': activeView === 'history' }"
+        >
           History
-        </span> 
+        </span>
       </div>
-      <ul class="flex-1 overflow-y-auto bg-base-100 font-mono p-2" ref="output" v-if="activeView === 'log'">
+      <ul
+        class="flex-1 overflow-y-auto bg-base-100 font-mono p-2"
+        ref="output"
+        v-if="activeView === 'log'"
+      >
         <li
           v-for="record in ledger.pending_records"
           :key="record.id"
@@ -25,40 +31,55 @@
           <div class="text-sm">
             <span class="text-primary font-bold mr-1">$</span
             ><span>{{ record.collection }}</span
-            >: {{ record.data.name || record.data.content || record.data.data?.name }}
+            >:
+            {{
+              record.data.name || record.data.content || record.data.data?.name
+            }}
           </div>
         </li>
       </ul>
-      <div class="flex-1 overflow-y-auto bg-base-100 font-mono p-2" ref="output" v-if="activeView === 'history'">
+      <div
+        class="flex-1 overflow-y-auto bg-base-100 font-mono p-2"
+        ref="output"
+        v-if="activeView === 'history'"
+      >
         <FullLog />
       </div>
     </div>
     <div class="divider divider-horizontal" />
     <div class="w-1/2 bg-base-200 flex flex-col pt-1">
-     <div class="tabs">
+      <div class="tabs">
         <span
           @click="activeViewRight = 'commit'"
           class="tab tab-lifted"
-          :class="{ 'tab-active': activeViewRight === 'commit'}">
+          :class="{ 'tab-active': activeViewRight === 'commit' }"
+        >
           Commit
-        </span> 
+        </span>
         <span
           @click="activeViewRight = 'encrypt'"
           class="tab tab-lifted"
-          :class="{ 'tab-active': activeViewRight === 'encrypt'}">
+          :class="{ 'tab-active': activeViewRight === 'encrypt' }"
+        >
           Encrypt
-        </span> 
+        </span>
         <div class="indicator">
           <span
             @click="activeViewRight = 'solid'"
             class="tab tab-lifted"
-            :class="{ 'tab-active': activeViewRight === 'solid'}">
-              <span class="indicator-item badge-xs badge badge-accent text-xs">new</span> 
-              <div class="place-items-center">Solid Pod</div>
-          </span> 
+            :class="{ 'tab-active': activeViewRight === 'solid' }"
+          >
+            <span class="indicator-item badge-xs badge badge-accent text-xs"
+              >new</span
+            >
+            <div class="place-items-center">Solid Pod</div>
+          </span>
         </div>
       </div>
-      <div class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2" v-if="activeViewRight === 'commit'">
+      <div
+        class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2"
+        v-if="activeViewRight === 'commit'"
+      >
         <textarea
           v-model="commitMessage"
           class="textarea resize-none textarea-bordered bg-base-100 rounded flex-1"
@@ -81,8 +102,11 @@
           </button>
         </div>
       </div>
-      
-      <div class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'encrypt'">
+
+      <div
+        class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2"
+        v-if="activeViewRight === 'encrypt'"
+      >
         <div class="flex flex-1 justify-between px-2 items-center">
           <textarea
             class="textarea textarea-bordered textarea-xs my-2 bg-base-100 rounded flex-1"
@@ -108,11 +132,13 @@
         </div>
       </div>
 
-      <div class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2" v-if="activeViewRight === 'solid'">
+      <div
+        class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2"
+        v-if="activeViewRight === 'solid'"
+      >
         <Solid :key="solidRefreshstamp" />
       </div>
-      
-    
+
       <div class="flex w-full justify-end px-4 py-2">
         <div v-if="encrypting">
           <button class="btn btn-disabled btn-sm" disabled>
@@ -120,52 +146,150 @@
           </button>
         </div>
         <div v-else-if="encryptedData" class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 inline mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+            />
           </svg>
           <span class="text-xs mr-4">Password Encrypted</span>
-          <DownloadButton :file-name="`${ledgerName}.ledger`" :data="encryptedData">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <DownloadButton
+            :file-name="`${ledgerName}.ledger.age`"
+            :data="encryptedData"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             <span class="ml-2">Download</span>
           </DownloadButton>
-          <button v-if="hasSolidSession" @click="saveSolid" class="btn btn-success btn-sm ml-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <button
+            v-if="hasSolidSession"
+            @click="saveSolid"
+            class="btn btn-success btn-sm ml-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             <span class="ml-2">Save</span>
           </button>
         </div>
         <div v-else-if="openPGPEncryptedData" class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
           <span class="text-xs mr-4">OpenPGP Encrypted</span>
-          <DownloadButton :file-name="`${ledgerName}.ledger.openpgp`" :data="openPGPEncryptedData">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <DownloadButton
+            :file-name="`${ledgerName}.ledger.openpgp`"
+            :data="openPGPEncryptedData"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             <span class="ml-2">Download</span>
           </DownloadButton>
-          <button v-if="hasSolidSession" @click="saveSolid" class="ml-1 btn btn-success btn-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <button
+            v-if="hasSolidSession"
+            @click="saveSolid"
+            class="ml-1 btn btn-success btn-sm"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             <span class="ml-2">Save</span>
           </button>
         </div>
         <div v-else class="flex items-center">
           <span class="text-xs mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 inline mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+              />
             </svg>
             Unencrypted
           </span>
-          <DownloadButton :file-name="`${ledgerName}.ledger.json`" :data="JSON.stringify(ledger)">
-            <span >Download</span>
+          <DownloadButton
+            :file-name="`${ledgerName}.ledger.json`"
+            :data="JSON.stringify(ledger)"
+          >
+            <span>Download</span>
           </DownloadButton>
-          <button v-if="hasSolidSession" @click="saveSolid" class="ml-1 btn btn-success btn-sm">
+          <button
+            v-if="hasSolidSession"
+            @click="saveSolid"
+            class="ml-1 btn btn-success btn-sm"
+          >
             <span>Save</span>
           </button>
         </div>
@@ -175,13 +299,13 @@
 </template>
 <script>
 import { ref, watch, onUpdated, computed } from "vue";
-import { watchThrottled } from '@vueuse/core'
+import { watchThrottled } from "@vueuse/core";
 import { useLedger } from "@/platform/composables/useLedger";
 import { useTree } from "@/platform/composables/useTree";
 import useEncryption from "@/platform/composables/useEncryption";
 import FullLog from "@/platform/modules/log/FullLog.vue";
 import DownloadButton from "@/platform/components/DownloadButton.vue";
-import Solid from './controls/Solid.vue';
+import Solid from "./controls/Solid.vue";
 import { useSolid } from "@/platform/composables/useSolid";
 
 export default {
@@ -191,8 +315,10 @@ export default {
     Solid,
   },
   setup() {
-    const activeView = ref(localStorage.getItem('consoleActiveView') || 'log');
-    const activeViewRight = ref(localStorage.getItem('consoleActiveViewRight') || 'commit');
+    const activeView = ref(localStorage.getItem("consoleActiveView") || "log");
+    const activeViewRight = ref(
+      localStorage.getItem("consoleActiveViewRight") || "commit"
+    );
     const { ledger, api } = useLedger();
     const { trunk } = useTree();
     const { encryptDataWithPGP, encryptDataWithPassword } = useEncryption();
@@ -200,9 +326,9 @@ export default {
 
     const output = ref(null);
     const commitMessage = ref(null);
-    const password = ref('');
-    const confirmPassword = ref('');
-    const openPGPPublicKey = ref('');
+    const password = ref("");
+    const confirmPassword = ref("");
+    const openPGPPublicKey = ref("");
     const openPGPKeyError = ref(false);
 
     async function squashCommit() {
@@ -215,37 +341,31 @@ export default {
       output.value.scrollTop = output.value.scrollHeight;
     });
 
-
     watch(activeView, () => {
-      localStorage.setItem('consoleActiveView', activeView.value)
-    })
+      localStorage.setItem("consoleActiveView", activeView.value);
+    });
     watch(activeViewRight, () => {
-      localStorage.setItem('consoleActiveViewRight', activeViewRight.value)
-    })
+      localStorage.setItem("consoleActiveViewRight", activeViewRight.value);
+    });
 
     const encryptedData = ref(null);
     const openPGPEncryptedData = ref(null);
     const encrypting = ref(false);
 
     const ledgerName = computed(() => {
-      return trunk.value.name.replace(/ /g, '-').toLowerCase();
-    })
-    
+      return trunk.value.name.replace(/ /g, "-").toLowerCase();
+    });
+
     watchThrottled(
-      [
-        password,
-        confirmPassword,
-        ledger,
-      ],
-      async ([
-        _password,
-        _confirmPassword,
-        _ledger,
-      ]) => {
+      [password, confirmPassword, ledger],
+      async ([_password, _confirmPassword, _ledger]) => {
         if (_password && _confirmPassword && _password === _confirmPassword) {
           try {
             encrypting.value = true;
-            encryptedData.value = await encryptDataWithPassword(JSON.stringify(_ledger), _password);
+            encryptedData.value = await encryptDataWithPassword(
+              _password,
+              JSON.stringify(_ledger)
+            );
             encrypting.value = false;
           } catch (err) {
             encryptedData.value = null;
@@ -258,15 +378,20 @@ export default {
       },
       { throttle: 500 }
     );
-    
-    watchThrottled([openPGPPublicKey, ledger], async ([_openPGPPublicKey, _ledger]) => {
+
+    watchThrottled(
+      [openPGPPublicKey, ledger],
+      async ([_openPGPPublicKey, _ledger]) => {
         openPGPKeyError.value = false;
         if (_openPGPPublicKey && _ledger) {
           try {
             encrypting.value = true;
-            openPGPEncryptedData.value = await encryptDataWithPGP(JSON.stringify(_ledger), _openPGPPublicKey);
+            openPGPEncryptedData.value = await encryptDataWithPGP(
+              JSON.stringify(_ledger),
+              _openPGPPublicKey
+            );
             encrypting.value = false;
-          } catch(e) {
+          } catch (e) {
             openPGPEncryptedData.value = null;
             openPGPKeyError.value = true;
             encrypting.value = false;
@@ -283,14 +408,26 @@ export default {
 
     async function saveSolid() {
       if (openPGPEncryptedData.value) {
-        await write(`${ledgerName.value}.ledger.openpgp`, 'ledger', openPGPEncryptedData.value);
+        await write(
+          `${ledgerName.value}.ledger.openpgp`,
+          "ledger",
+          openPGPEncryptedData.value
+        );
         return;
       }
       if (encryptedData.value) {
-        await write(`${ledgerName.value}.ledger.pwd`, 'ledger', encryptedData.value);
+        await write(
+          `${ledgerName.value}.ledger.age`,
+          "ledger",
+          encryptedData.value
+        );
         return;
       }
-      await write(`${ledgerName.value}.ledger.json`, 'ledger', JSON.stringify(ledger.value));
+      await write(
+        `${ledgerName.value}.ledger.json`,
+        "ledger",
+        JSON.stringify(ledger.value)
+      );
       solidRefreshstamp.value = Date.now();
     }
 
@@ -314,7 +451,7 @@ export default {
       hasSolidSession,
       ledgerName,
       saveSolid,
-      solidRefreshstamp
+      solidRefreshstamp,
     };
   },
 };

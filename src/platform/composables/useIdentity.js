@@ -1,5 +1,11 @@
 import { shallowRef, watch, provide, inject } from "vue";
-import { generateKey } from "openpgp";
+import {
+  generate,
+  exportPrivateKeyAsPem,
+  exportPublicKeyAsPem,
+  importPrivateKeyFromPem,
+  importPublicKeyFromPem,
+} from "@/lib/ecdsa";
 
 export const useIdentitySymbol = Symbol("useIdentity");
 
@@ -7,45 +13,44 @@ export function useIdentity() {
   return inject(useIdentitySymbol);
 }
 
-export function provideIdentity({
-  privateKey: _privateKey,
-  publicKey: _publicKey,
-  revocationCertificate: _revocationCertificate,
-} = {}) {
-  const privateKey = shallowRef(_privateKey);
-  const publicKey = shallowRef(_publicKey);
-  const revocationCertificate = shallowRef(_revocationCertificate);
+export function provideIdentity() {
+  const signKeyPem = shallowRef(window.localStorage.getItem("signKeyPem"));
+  const verifyKeyPem = shallowRef(window.localStorage.getItem("verifyKeyPem"));
+
+  const signKey = shallowRef(null);
+  const verifyKey = shallowRef(null);
 
   async function createKeys() {
-    const {
-      privateKey: prk,
-      publicKey: pbk,
-      revocationCertificate: rcert,
-    } = await generateKey({
-      type: "ecc",
-      curve: "curve25519",
-      userIDs: [{ name: "Guest", email: "guest@concords.app" }],
-      passphrase: "password1",
-      format: "armored",
-    });
+    const { publicKey, privateKey } = await generate();
 
-    privateKey.value = prk;
-    publicKey.value = pbk;
-    revocationCertificate.value = rcert;
+    signKey.value = privateKey;
+    verifyKey.value = publicKey;
+
+    signKeyPem.value = await exportPrivateKeyAsPem(privateKey);
+    verifyKeyPem.value = await exportPublicKeyAsPem(publicKey);
   }
 
-  if (!privateKey.value) {
+  async function loadKeys() {
+    signKey.value = await importPrivateKeyFromPem(signKeyPem.value);
+    verifyKey.value = await importPublicKeyFromPem(verifyKeyPem.value);
+  }
+
+  if (!signKeyPem.value) {
     createKeys();
+  } else if (!signKey.value) {
+    loadKeys();
   }
 
-  watch([privateKey, publicKey], (_privateKey, _publicKey) => {
-    window.localStorage.setItem("privateKey", _privateKey);
-    window.localStorage.setItem("publicKey", _publicKey);
+  watch([signKeyPem, verifyKeyPem], ([_signKeyPem, _verifyKeyPem]) => {
+    window.localStorage.setItem("signKeyPem", _signKeyPem);
+    window.localStorage.setItem("verifyKeyPem", _verifyKeyPem);
   });
 
   const useIdentityInterface = {
-    publicKey,
-    privateKey,
+    signKey,
+    signKeyPem,
+    verifyKey,
+    verifyKeyPem,
   };
 
   provide(useIdentitySymbol, useIdentityInterface);

@@ -10,20 +10,11 @@ import {
 export * from "./utils";
 
 export async function generate() {
-  const { publicKey, privateKey } = await crypto.subtle.generateKey(
+  return await crypto.subtle.generateKey(
     { name: "ECDSA", namedCurve: "P-256" },
     true,
     ["sign", "verify"]
   );
-
-  const publicSigningKey = await crypto.subtle.exportKey("jwk", publicKey);
-
-  const privateSigningKey = await crypto.subtle.exportKey("jwk", privateKey);
-
-  return {
-    secret: privateSigningKey.d,
-    points: { x: publicSigningKey.x, y: publicSigningKey.y },
-  };
 }
 
 /**
@@ -97,18 +88,18 @@ export async function exportSigningKey(signingKey) {
   return await crypto.subtle.exportKey("jwk", signingKey);
 }
 
-export async function exportSigningKeyAsPem(signingKey) {
+export async function exportPrivateKeyAsPem(signingKey) {
   const exportedPrivateKey = await crypto.subtle.exportKey("pkcs8", signingKey);
-  return `-----BEGIN PRIVATE KEY-----
+  return `-----BEGIN CONCORDS PRIVATE KEY-----
 ${addNewLines(
   arrayBufferToBase64(exportedPrivateKey)
-)}-----END PRIVATE KEY-----`;
+)}-----END CONCORDS PRIVATE KEY-----`;
 }
 
 export async function importPrivateKeyFromPem(key) {
   const b64key = key
-    .replace("-----BEGIN PRIVATE KEY-----", "")
-    .replace("-----END PRIVATE KEY-----", "");
+    .replace("-----BEGIN CONCORDS PRIVATE KEY-----", "")
+    .replace("-----END CONCORDS PRIVATE KEY-----", "");
 
   return window.crypto.subtle.importKey(
     "pkcs8",
@@ -116,6 +107,19 @@ export async function importPrivateKeyFromPem(key) {
     { name: "ECDSA", namedCurve: "P-256" },
     true,
     ["sign"]
+  );
+}
+
+export async function importPublicKeyFromPem(key) {
+  const b64key = key
+    .replace("-----BEGIN CONCORDS PUBLIC KEY-----", "")
+    .replace("-----END CONCORDS PUBLIC KEY-----", "");
+  return window.crypto.subtle.importKey(
+    "spki",
+    base64ToArrayBuffer(removeLines(b64key)),
+    { name: "ECDSA", namedCurve: "P-256" },
+    true,
+    ["verify"]
   );
 }
 
@@ -130,6 +134,14 @@ export async function importPrivateKeyFromPem(key) {
 export async function exportPublicKey(key) {
   const exported = await window.crypto.subtle.exportKey("spki", key);
   return btoa(String.fromCharCode.apply(null, new Uint8Array(exported)));
+}
+
+export async function exportPublicKeyAsPem(key) {
+  const exportedPublicKey = await window.crypto.subtle.exportKey("spki", key);
+  return `-----BEGIN CONCORDS PUBLIC KEY-----
+${addNewLines(
+  arrayBufferToBase64(exportedPublicKey)
+)}-----END CONCORDS PUBLIC KEY-----`;
 }
 
 export async function sign(signingKey, data) {

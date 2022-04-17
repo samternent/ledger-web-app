@@ -1,16 +1,6 @@
 import { hashData } from "./utils";
 import { addRecord, createLedger, mine } from "./core";
-
-import {
-  generateKey,
-  readPrivateKey,
-  readKey,
-  decryptKey,
-  createMessage,
-  sign,
-  readCleartextMessage,
-  verify,
-} from "openpgp";
+import { sign, exportPublicKeyAsPem } from "@/lib/ecdsa";
 
 function generateId() {
   const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
@@ -34,14 +24,13 @@ const availableHooks = [
 export default (
   config = {
     plugins: [],
-    identity: null,
-    secret: null,
     ledger: null,
   }
 ) => {
   const state = {
     ledger: null,
     signingKey: null,
+    publicKey: null,
   };
 
   let hooks = availableHooks.reduce(
@@ -68,9 +57,10 @@ export default (
     }
   }
 
-  async function auth(privateKey, publicKey) {
-    state.signingKey = privateKey;
-    state.publicKey = publicKey;
+  async function auth(signKey, verifyKey) {
+    state.signingKey = signKey;
+    state.publicKey = verifyKey;
+
     await runHooks("onAuth");
   }
 
@@ -82,19 +72,10 @@ export default (
       ...genesisRecord,
       id,
       timestamp,
-      openPGP: state.publicKey,
+      identity: await exportPublicKeyAsPem(state.publicKey),
     };
 
-    const privateKey = await decryptKey({
-      privateKey: await readPrivateKey({ armoredKey: state.signingKey }),
-      passphrase: "password1",
-    });
-
-    const signature = await sign({
-      message: await createMessage({ text: JSON.stringify(record) }),
-      signingKeys: privateKey,
-      detached: true,
-    });
+    const signature = await sign(state.signingKey, JSON.stringify(record));
 
     const signedRecord = {
       signature,
@@ -132,7 +113,7 @@ export default (
     const record = {
       data,
       timestamp,
-      openPGP: state.publicKey,
+      identity: await exportPublicKeyAsPem(state.publicKey),
     };
 
     if (collection) {
@@ -140,16 +121,8 @@ export default (
     }
 
     record.id = await hashData(`${JSON.stringify(record)}`);
-    const privateKey = await decryptKey({
-      privateKey: await readPrivateKey({ armoredKey: state.signingKey }),
-      passphrase: "password1",
-    });
 
-    const signature = await sign({
-      message: await createMessage({ text: JSON.stringify(record) }),
-      signingKeys: privateKey,
-      detached: true,
-    });
+    const signature = await sign(state.signingKey, JSON.stringify(record));
 
     const signedRecord = {
       signature,

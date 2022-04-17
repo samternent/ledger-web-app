@@ -15,7 +15,7 @@ export function useLedger() {
   return inject(useLedgerSymbol);
 }
 
-export function provideLedger({ privateKey, publicKey }) {
+export function provideLedger({ signKey, verifyKey }) {
   const loading = ref(false);
   const loaded = ref(false);
   const api = ref(null);
@@ -68,7 +68,7 @@ export function provideLedger({ privateKey, publicKey }) {
             },
           ],
         });
-        await api.value.auth(privateKey.value, publicKey.value);
+        await api.value.auth(signKey.value, verifyKey.value);
       } catch (e) {
         reject(e);
       }

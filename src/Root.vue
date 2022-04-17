@@ -4,11 +4,11 @@
       <VerticalNav />
     </template>
 
-    <OpenPGP>
+    <Identity>
       <Ledger>
         <router-view />
       </Ledger>
-    </OpenPGP>
+    </Identity>
   </AppShell>
 </template>
 
@@ -16,7 +16,7 @@
 import AppLayout from "@/platform/layouts/AppLayout.vue";
 import AppShell from "@/platform/layouts/AppShell.vue";
 import VerticalNav from "@/platform/modules/nav/VerticalNav.vue";
-import OpenPGP from "@/platform/modules/openPGP/OpenPGP.vue";
+import Identity from "@/platform/modules/identity/Identity.vue";
 import Ledger from "@/platform/modules/ledger/Ledger.vue";
 
 export default {
@@ -24,7 +24,7 @@ export default {
     AppLayout,
     AppShell,
     VerticalNav,
-    OpenPGP,
+    Identity,
     Ledger,
   },
 };

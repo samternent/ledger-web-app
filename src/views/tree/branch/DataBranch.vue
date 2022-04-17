@@ -52,7 +52,7 @@
       <div
         class="flex-1 flex overflow-auto absolute right-0 left-0 top-16 bottom-0"
       >
-        <div v-if="headers.length">
+        <div class="flex flex-1" v-if="headers.length">
           <DataTable :headers="headers" @add-row="addRow" :rows="branchData" />
         </div>
         <div v-else class="flex flex-col mx-auto items-center">

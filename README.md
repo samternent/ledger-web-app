@@ -47,7 +47,7 @@ There is a native Solid POD integration built into the web app for storing ledge
     ...
   },
   id: "dffdbcd6ab717e5dee2a6bdc879d3c5de625f7939f35f896b76ca3679fdc9a",
-  openPGP: "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxjMEYldK2xYJKwYBBAHaRw8BAQdA5JXOhyd7dDN8z1gfBYzkIoqBsjzsOPtC\nfpjNR1VeEBnNGkd1ZXN0IDxndWVzdEBjb25jb3Jkcy5hcHA+wowEEBYKAB0F\nAmJXStsECwkHCAMVCAoEFgACAQIZAQIbAwIeAQAhCRAxjjnJg1168RYhBNN/\n/0CYDWI8Kgo5dDGOOcmDXXrxRW4A/0xBkRbNhbeu2gZxcAxKuYUJugUUm75W\ntx2hLoQ41K88AQDZhTDvBSPRvkkX1gFs9Qp4HHmieD87CHDEvZlHyzayAM44\nBGJXStsSCisGAQQBl1UBBQEBB0CK6PImo8pPBOslsxlPz49RsXkBt8x2eY3W\nobDGwFZCWAMBCAfCeAQYFggACQUCYldK2wIbDAAhCRAxjjnJg1168RYhBNN/\n/0CYDWI8Kgo5dDGOOcmDXXrxJpIBAMfVI8YzpH8jOMrk4omtb70LGbbksHtX\nfMq4ApZlwaOVAQCRGaZWNj0aVJs39pxMGmjoE9XdvJGREsI+Nd1eCV8ABw==\n=CbaC\n-----END PGP PUBLIC KEY BLOCK-----\n",
+  identity: "",
   signature: "-----BEGIN PGP SIGNATURE-----\n\nwnUEARYKAAYFAmJXUd0AIQkQMY45yYNdevEWIQTTf/9AmA1iPCoKOXQxjjnJ\ng1168TVKAP99AhqfCCs3EnzCxtep+Ckuvp79F09taJfs/ta42KBIUQD9FzaW\n1P7nesJpXwcN6Go/VhcbzRqzybSb+lpOt1xhsAI=\n=0HyR\n-----END PGP SIGNATURE-----\n",
   timestamp: 1649889756801,
 }

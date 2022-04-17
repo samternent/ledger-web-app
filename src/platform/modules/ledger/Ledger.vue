@@ -11,9 +11,9 @@ import { provideSolid } from "@/platform/composables/useSolid";
 export default {
   name: "Ledger",
   setup() {
-    const { privateKey, publicKey } = useIdentity();
-    provideLedger({ privateKey, publicKey });
+    const { signKey, verifyKey } = useIdentity();
+    provideLedger({ signKey, verifyKey });
     provideSolid();
-  }
-}
+  },
+};
 </script>
