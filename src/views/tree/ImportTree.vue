@@ -1,47 +1,42 @@
 <template>
-  <div class="flex-1 flex justify-center items-center">
-    <div class="text-center md:w-1/2">
-      <div v-if="isPasswordEncrypted">
-        This Ledger is password ecrypted.
-        <input
-          class="input input-bordered"
-          v-model="password"
-          placeholder="Ledger password"
-        />
-        <button class="btn btn-primary" @click="passwordDecrypt">Open</button>
-      </div>
-      <div v-else-if="isPGPEncrypted">
-        <h2>This Ledger is PGP ecrypted.</h2>
-        <textarea
-          class="textarea textarea-bordered textarea-xs w-full my-2 bg-base-100 rounded flex-1"
-          placeholder="OpenPGP PRivate Key"
-          v-model="openPGPPrivateKey"
-        />
-        <button class="btn btn-primary" @click="openPGPDecrypt">Open</button>
-      </div>
-      <div v-else class="flex flex-col">
-        <Solid class="mx-auto border border-base-300 rounded my-4 p-4" />
-        <LoadFromFile @load="handleLoad">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"
-            />
-          </svg>
-          Load from File System
-        </LoadFromFile>
-        <LoadFromURL @load="handleLoad" class="mt-4">
-          <span class="hidden md:block ml-2">Load from URL</span>
-        </LoadFromURL>
-      </div>
+  <div class="flex-1 flex justify-center items-center p-2">
+    <div
+      v-if="isPasswordEncrypted"
+      class="flex flex-1 flex-col items-center text-center"
+    >
+      <h2 class="font-thin text-4xl my-4">Encrypted Ledger</h2>
+      <input
+        type="password"
+        class="input input-bordered my-4 w-full md:w-1/2"
+        v-model="password"
+        placeholder="Age Private Key or Password"
+      />
+      <button class="btn btn-primary w-40" @click="passwordDecrypt">
+        Decrypt
+      </button>
+    </div>
+    <div v-else class="flex flex-col items-center text-center justify-center">
+      <Solid class="mx-auto border border-base-300 rounded my-4 p-4" />
+      <LoadFromFile @load="handleLoad">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"
+          />
+        </svg>
+        Load from File System
+      </LoadFromFile>
+      <LoadFromURL @load="handleLoad" class="mt-4">
+        <span class="hidden md:block ml-2">Load from URL</span>
+      </LoadFromURL>
     </div>
   </div>
 </template>
@@ -66,7 +61,7 @@ export default {
       methods: { loadLedger },
     } = useLedger();
     const router = useRouter();
-    const { decryptDataWithPassword, decryptDataWithPGP } = useEncryption();
+    const { decryptDataWithPassword, decryptDataWithAge } = useEncryption();
 
     const rawLedger = shallowRef(null);
     const isPasswordEncrypted = shallowRef(false);
@@ -79,19 +74,26 @@ export default {
           password.value,
           rawLedger.value
         );
-        console.log(rawDecrypted);
         const l = JSON.parse(rawDecrypted);
         window.localStorage.setItem("ledger", rawDecrypted);
         router.push(`/`);
       } catch (e) {
         console.error(e);
+        openPGPDecrypt();
       }
     }
     async function openPGPDecrypt() {
-      const rawDecrypted = await decryptDataWithPGP(rawLedger.value);
-      const l = JSON.parse(rawDecrypted);
-      window.localStorage.setItem("ledger", rawDecrypted);
-      router.push(`/`);
+      try {
+        const rawDecrypted = await decryptDataWithAge(
+          password.value,
+          rawLedger.value
+        );
+        const l = JSON.parse(rawDecrypted);
+        window.localStorage.setItem("ledger", rawDecrypted);
+        router.push(`/`);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     async function handleLoad(raw) {

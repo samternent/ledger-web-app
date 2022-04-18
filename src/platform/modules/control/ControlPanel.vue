@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="divider divider-horizontal" />
-    <div class="w-1/2 bg-base-200 flex flex-col pt-1">
+    <div class="w-1/2 bg-base-200 flex flex-col pt-2">
       <div class="tabs">
         <span
           @click="activeViewRight = 'commit'"
@@ -69,7 +69,8 @@
             class="tab tab-lifted"
             :class="{ 'tab-active': activeViewRight === 'solid' }"
           >
-            <span class="indicator-item badge-xs badge badge-accent text-xs"
+            <span
+              class="indicator-item indicator-end indicator-top badge-xs badge badge-accent text-xs"
               >new</span
             >
             <div class="place-items-center">Solid Pod</div>
@@ -104,28 +105,49 @@
       </div>
 
       <div
-        class="flex-1 flex flex w-full overflow-y-auto bg-base-100 font-mono p-2"
+        class="flex-1 flex flex-col w-full overflow-y-auto bg-base-100 font-mono p-2"
         v-if="activeViewRight === 'encrypt'"
       >
-        <div class="flex flex-1 justify-between px-2 items-center">
-          <textarea
-            class="textarea textarea-bordered textarea-xs my-2 bg-base-100 rounded flex-1"
-            :class="{ 'textarea-error': openPGPKeyError }"
-            placeholder="Encrypt for OpenPGP Key"
+        <div class="tabs">
+          <button
+            class="tab tab-bordered"
+            :class="{ 'tab-active': encryptView === 'password' }"
+            @click="encryptView = 'password'"
+          >
+            Password
+          </button>
+          <button
+            class="tab tab-bordered"
+            :class="{ 'tab-active': encryptView === 'ageKey' }"
+            @click="encryptView = 'ageKey'"
+          >
+            Age Key
+          </button>
+        </div>
+
+        <div
+          class="flex py-1 justify-between px-2 items-center"
+          v-if="encryptView === 'ageKey'"
+        >
+          <input
+            class="input input-bordered my-2 mr-2 bg-base-100 rounded flex-1"
+            placeholder="Age Public Key"
             v-model="openPGPPublicKey"
           />
         </div>
-        <div class="divider divider-horizontal">OR</div>
-        <div class="flex flex-col justify-between px-2 items-center">
+        <div
+          class="flex justify-between px-2 items-center py-1"
+          v-if="encryptView === 'password'"
+        >
           <input
             type="password"
-            class="input input-bordered input-sm my-2 bg-base-100 rounded flex-1"
-            placeholder="Password Protect"
+            class="input input-bordered my-2 mr-2 bg-base-100 rounded flex-1"
+            placeholder="Password"
             v-model="password"
           />
           <input
             type="password"
-            class="input input-bordered input-sm my-2 bg-base-100 rounded flex-1"
+            class="input input-bordered ml-2 my-2 bg-base-100 rounded flex-1"
             placeholder="Confirm Password"
             v-model="confirmPassword"
           />
@@ -148,7 +170,7 @@
         <div v-else-if="encryptedData" class="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 inline mr-2"
+            class="h-6 w-6 mr-2"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -157,7 +179,7 @@
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
           <span class="text-xs mr-4">Password Encrypted</span>
@@ -218,9 +240,9 @@
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <span class="text-xs mr-4">OpenPGP Encrypted</span>
+          <span class="text-xs mr-4">Age Encrypted</span>
           <DownloadButton
-            :file-name="`${ledgerName}.ledger.openpgp`"
+            :file-name="`${ledgerName}.ledger.age`"
             :data="openPGPEncryptedData"
           >
             <svg
@@ -316,12 +338,13 @@ export default {
   },
   setup() {
     const activeView = ref(localStorage.getItem("consoleActiveView") || "log");
+    const encryptView = ref(localStorage.getItem("encryptView") || "password");
     const activeViewRight = ref(
       localStorage.getItem("consoleActiveViewRight") || "commit"
     );
     const { ledger, api } = useLedger();
     const { trunk } = useTree();
-    const { encryptDataWithPGP, encryptDataWithPassword } = useEncryption();
+    const { encryptDataWithAge, encryptDataWithPassword } = useEncryption();
     const { hasSolidSession, write, fetch } = useSolid();
 
     const output = ref(null);
@@ -346,6 +369,9 @@ export default {
     });
     watch(activeViewRight, () => {
       localStorage.setItem("consoleActiveViewRight", activeViewRight.value);
+    });
+    watch(encryptView, () => {
+      localStorage.setItem("encryptView", encryptView.value);
     });
 
     const encryptedData = ref(null);
@@ -386,9 +412,9 @@ export default {
         if (_openPGPPublicKey && _ledger) {
           try {
             encrypting.value = true;
-            openPGPEncryptedData.value = await encryptDataWithPGP(
-              JSON.stringify(_ledger),
-              _openPGPPublicKey
+            openPGPEncryptedData.value = await encryptDataWithAge(
+              _openPGPPublicKey,
+              JSON.stringify(_ledger)
             );
             encrypting.value = false;
           } catch (e) {
@@ -452,6 +478,7 @@ export default {
       ledgerName,
       saveSolid,
       solidRefreshstamp,
+      encryptView,
     };
   },
 };

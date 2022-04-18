@@ -18,6 +18,7 @@ import AppShell from "@/platform/layouts/AppShell.vue";
 import VerticalNav from "@/platform/modules/nav/VerticalNav.vue";
 import Identity from "@/platform/modules/identity/Identity.vue";
 import Ledger from "@/platform/modules/ledger/Ledger.vue";
+import { provideSolid } from "@/platform/composables/useSolid";
 
 export default {
   components: {
@@ -26,6 +27,9 @@ export default {
     VerticalNav,
     Identity,
     Ledger,
+  },
+  setup() {
+    provideSolid();
   },
 };
 </script>

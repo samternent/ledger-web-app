@@ -31,7 +31,8 @@ export default function useEncryption() {
   async function encryptDataWithAge(publicKey, secretData) {
     const encrypted = await encrypt_with_x25519(
       publicKey,
-      new TextEncoder().encode(JSON.stringify(secretData))
+      new TextEncoder().encode(JSON.stringify(secretData)),
+      true
     );
     return encrypted;
   }
@@ -41,7 +42,7 @@ export default function useEncryption() {
       privateKey,
       new TextEncoder().encode(encryptedData)
     );
-    return decrypted;
+    return JSON.parse(new TextDecoder("utf-8").decode(decrypted));
   }
 
   return {

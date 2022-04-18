@@ -1,12 +1,15 @@
 <template>
-  <div class="p-2 flex-1 flex-col">
-    <h1 class="text-2xl font-medium">Encryption Keys</h1>
+  <div class="p-2 flex-col flex-1">
+    <h1 class="text-2xl font-medium">Identity Keys</h1>
     <div class="flex flex-col text-xs mt-4">
-      <input class="input input-bordered w-full my-1" :value="publicKey" />
-      <input
-        class="input input-bordered w-full"
-        type="passwrd"
-        :value="privateKey"
+      <textarea
+        class="textarea textarea-bordered w-full my-1 h-32 w-full md:w-1/2 my-2"
+        :value="verifyKeyPem"
+      />
+      <textarea
+        class="textarea textarea-bordered w-full h-40 w-full md:w-1/2 my-2"
+        type="password"
+        :value="signKeyPem"
       />
     </div>
     <div>
@@ -26,9 +29,20 @@ import { useIdentity } from "@/platform/composables/useIdentity";
 
 export default {
   setup() {
-    const { publicKey, privateKey } = useIdentity();
+    const { verifyKeyPem, signKeyPem } = useIdentity();
 
-    const theme = window.localStorage.getItem("theme");
+    let theme = window.localStorage.getItem("theme");
+
+    if (!theme) {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        theme = "dark";
+      } else {
+        theme = "light";
+      }
+    }
 
     const toggleDarkMode = shallowRef(
       !theme || theme !== "dark" ? false : true
@@ -45,8 +59,8 @@ export default {
     });
 
     return {
-      publicKey,
-      privateKey,
+      verifyKeyPem,
+      signKeyPem,
       toggleDarkMode,
     };
   },
