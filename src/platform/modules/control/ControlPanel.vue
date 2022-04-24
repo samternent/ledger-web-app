@@ -33,7 +33,11 @@
             ><span>{{ record.collection }}</span
             >:
             {{
-              record.data.name || record.data.content || record.data.data?.name
+              record.data.name ||
+              record.data.content ||
+              record.data.data ||
+              record.data.types ||
+              record.data
             }}
           </div>
         </li>
@@ -73,7 +77,7 @@
               class="indicator-item indicator-end indicator-top badge-xs badge badge-accent text-xs"
               >new</span
             >
-            <div class="place-items-center">Solid Pod</div>
+            <div class="place-items-center">Solid Storage</div>
           </span>
         </div>
       </div>
@@ -132,7 +136,7 @@
           <input
             class="input input-bordered my-2 mr-2 bg-base-100 rounded flex-1"
             placeholder="Age Public Key"
-            v-model="openPGPPublicKey"
+            v-model="ragePublicKey"
           />
         </div>
         <div
@@ -182,7 +186,7 @@
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <span class="text-xs mr-4">Password Encrypted</span>
+          <span class="text-xs mr-4">Age Encrypted</span>
           <DownloadButton
             :file-name="`${ledgerName}.ledger.age`"
             :data="encryptedData"
@@ -207,64 +211,6 @@
             v-if="hasSolidSession"
             @click="saveSolid"
             class="btn btn-success btn-sm ml-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            <span class="ml-2">Save</span>
-          </button>
-        </div>
-        <div v-else-if="openPGPEncryptedData" class="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-          <span class="text-xs mr-4">Age Encrypted</span>
-          <DownloadButton
-            :file-name="`${ledgerName}.ledger.age`"
-            :data="openPGPEncryptedData"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            <span class="ml-2">Download</span>
-          </DownloadButton>
-          <button
-            v-if="hasSolidSession"
-            @click="saveSolid"
-            class="ml-1 btn btn-success btn-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -351,8 +297,7 @@ export default {
     const commitMessage = ref(null);
     const password = ref("");
     const confirmPassword = ref("");
-    const openPGPPublicKey = ref("");
-    const openPGPKeyError = ref(false);
+    const ragePublicKey = ref("");
 
     async function squashCommit() {
       await api.value.squashRecords();
@@ -375,7 +320,6 @@ export default {
     });
 
     const encryptedData = ref(null);
-    const openPGPEncryptedData = ref(null);
     const encrypting = ref(false);
 
     const ledgerName = computed(() => {
@@ -406,24 +350,20 @@ export default {
     );
 
     watchThrottled(
-      [openPGPPublicKey, ledger],
-      async ([_openPGPPublicKey, _ledger]) => {
-        openPGPKeyError.value = false;
-        if (_openPGPPublicKey && _ledger) {
+      [ragePublicKey, ledger],
+      async ([_ragePublicKey, _ledger]) => {
+        if (_ragePublicKey && _ledger) {
           try {
             encrypting.value = true;
-            openPGPEncryptedData.value = await encryptDataWithAge(
-              _openPGPPublicKey,
+            encryptedData.value = await encryptDataWithAge(
+              _ragePublicKey,
               JSON.stringify(_ledger)
             );
             encrypting.value = false;
           } catch (e) {
-            openPGPEncryptedData.value = null;
-            openPGPKeyError.value = true;
             encrypting.value = false;
           }
         } else {
-          openPGPEncryptedData.value = null;
           encrypting.value = false;
         }
       },
@@ -433,14 +373,6 @@ export default {
     const solidRefreshstamp = ref(Date.now());
 
     async function saveSolid() {
-      if (openPGPEncryptedData.value) {
-        await write(
-          `${ledgerName.value}.ledger.openpgp`,
-          "ledger",
-          openPGPEncryptedData.value
-        );
-        return;
-      }
       if (encryptedData.value) {
         await write(
           `${ledgerName.value}.ledger.age`,
@@ -469,10 +401,8 @@ export default {
       commitMessage,
       password,
       encryptedData,
-      openPGPEncryptedData,
       confirmPassword,
-      openPGPPublicKey,
-      openPGPKeyError,
+      ragePublicKey,
       encrypting,
       hasSolidSession,
       ledgerName,

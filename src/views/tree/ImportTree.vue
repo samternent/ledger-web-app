@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex justify-center items-center p-2">
     <div
-      v-if="isPasswordEncrypted"
+      v-if="isEncrypted"
       class="flex flex-1 flex-col items-center text-center"
     >
       <h2 class="font-thin text-4xl my-4">Encrypted Ledger</h2>
@@ -65,7 +65,7 @@ export default {
 
     const rawLedger = shallowRef(null);
     const isPasswordEncrypted = shallowRef(false);
-    const isPGPEncrypted = shallowRef(false);
+    const isEncrypted = shallowRef(false);
     const password = shallowRef(null);
 
     async function passwordDecrypt() {
@@ -79,10 +79,10 @@ export default {
         router.push(`/`);
       } catch (e) {
         console.error(e);
-        openPGPDecrypt();
+        ageKeyDecrypt();
       }
     }
-    async function openPGPDecrypt() {
+    async function ageKeyDecrypt() {
       try {
         const rawDecrypted = await decryptDataWithAge(
           password.value,
@@ -105,9 +105,7 @@ export default {
         router.push(`/l/${l.id.slice(0, 6)}`);
       } catch (err) {
         if (raw.includes("-----BEGIN AGE ENCRYPTED FILE-----")) {
-          isPasswordEncrypted.value = true;
-        } else if (raw.includes("-----BEGIN PGP MESSAGE-----")) {
-          openPGPDecrypt();
+          isEncrypted.value = true;
         }
       }
     }
@@ -115,10 +113,8 @@ export default {
     return {
       handleLoad,
       rawLedger,
-      isPasswordEncrypted,
-      isPGPEncrypted,
+      isEncrypted,
       passwordDecrypt,
-      openPGPDecrypt,
       password,
     };
   },

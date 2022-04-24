@@ -11,15 +11,20 @@
       </button>
     </div>
     <div v-else class="py-2 flex flex-col flex-1">
-      <div v-if="isPasswordEncrypted" class="mx-auto my-2">
-        <p>This Ledger is Age ecrypted.</p>
+      <div
+        v-if="isEncrypted"
+        class="flex flex-1 flex-col items-center text-center"
+      >
+        <h2 class="font-thin text-4xl my-4">Encrypted Ledger</h2>
         <input
-          class="input input-bordered"
           type="password"
+          class="input input-bordered my-4 w-full md:w-1/2"
           v-model="password"
-          placeholder="Ledger password"
+          placeholder="Age Private Key or Password"
         />
-        <button class="btn btn-primary" @click="passwordDecrypt">Open</button>
+        <button class="btn btn-primary w-40" @click="passwordDecrypt">
+          Decrypt
+        </button>
       </div>
       <div v-if="!ledgerList.length" class="flex flex-1 text-sec-text">
         No Saved Ledgers
@@ -135,29 +140,36 @@ export default {
     const { decryptDataWithPassword, decryptDataWithPGP } = useEncryption();
 
     const rawLedger = shallowRef(null);
-    const isPasswordEncrypted = shallowRef(false);
-    const isPGPEncrypted = shallowRef(false);
+    const isEncrypted = shallowRef(false);
     const password = shallowRef(null);
     const deleteId = shallowRef(null);
 
     async function passwordDecrypt() {
       try {
         const rawDecrypted = await decryptDataWithPassword(
-          rawLedger.value,
-          password.value
+          password.value,
+          rawLedger.value
         );
         const l = JSON.parse(rawDecrypted);
         window.localStorage.setItem("ledger", rawDecrypted);
         router.push(`/`);
       } catch (e) {
         console.error(e);
+        ageKeyDecrypt();
       }
     }
-    async function openPGPDecrypt() {
-      const rawDecrypted = await decryptDataWithPGP(rawLedger.value);
-      const l = JSON.parse(rawDecrypted);
-      window.localStorage.setItem("ledger", rawDecrypted);
-      router.push(`/`);
+    async function ageKeyDecrypt() {
+      try {
+        const rawDecrypted = await decryptDataWithAge(
+          password.value,
+          rawLedger.value
+        );
+        const l = JSON.parse(rawDecrypted);
+        window.localStorage.setItem("ledger", rawDecrypted);
+        router.push(`/`);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     async function handleLoad(raw) {
@@ -168,10 +180,8 @@ export default {
         window.localStorage.setItem("ledger", raw);
         router.push(`/l/${l.id.slice(0, 6)}`);
       } catch (err) {
-        if (raw.includes("-----BEGIN PASSWORD ENCRYPTED MESSAGE-----")) {
-          isPasswordEncrypted.value = true;
-        } else if (raw.includes("-----BEGIN PGP MESSAGE-----")) {
-          openPGPDecrypt();
+        if (raw.includes("-----BEGIN AGE ENCRYPTED FILE-----")) {
+          isEncrypted.value = true;
         }
       }
     }
@@ -214,7 +224,7 @@ export default {
       logout,
       profile,
       passwordDecrypt,
-      isPasswordEncrypted,
+      isEncrypted,
       password,
       deleteId,
     };
