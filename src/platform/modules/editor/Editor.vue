@@ -1,6 +1,5 @@
 <template>
-  <div class="flex-1 flex-col flex group relative p-4">
-    <h1 class="font-thin text-5xl my-2">{{ title }}</h1>
+  <div class="flex-1 flex-col flex group relative">
     <div class="sticky top-0 z-20 bg-base-100">
       <div
         v-if="editor"

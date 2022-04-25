@@ -1,17 +1,40 @@
 <template>
-  <div class="relative flex overflow-auto">
-    <Teleport to="#LeftPanelContent">
-      <div class="overflow-x-hidden pr-6">
-        <Tree v-if="trunk.id" :branch-id="trunk.id" />
-      </div>
-    </Teleport>
+  <Teleport to="#LeftPanelContent">
+    <div class="overflow-x-hidden pr-6">
+      <Tree
+        :branch-id="trunk.id"
+        v-if="trunk.id && $route.path !== `/l/${id}/${activeBranch.id}/create`"
+      />
+    </div>
+  </Teleport>
+  <div class="relative flex overflow-auto flex-1 flex-col">
+    <div class="tabs py-3">
+      <router-link
+        class="tab tab-bordered"
+        exact-active-class="tab-active"
+        :to="`/l/${id}/${activeBranch.id}`"
+        >Document</router-link
+      >
+      <router-link
+        class="tab tab-bordered"
+        exact-active-class="tab-active"
+        :to="`/l/${id}/${activeBranch.id}/data`"
+        >Data</router-link
+      >
+      <!-- <router-link
+        class="tab tab-bordered"
+        exact-active-class="tab-active"
+        :to="`/l/${id}/${activeBranch.id}/charts`"
+        >Charts</router-link
+      > -->
+    </div>
     <Branch v-if="activeBranch" />
   </div>
 </template>
 <script>
-import { watch, shallowRef } from 'vue';
-import { useRoute } from 'vue-router'
-import Branch from './Branch.vue'
+import { watch, shallowRef } from "vue";
+import { useRoute } from "vue-router";
+import Branch from "./Branch.vue";
 import Tree from "@/views/tree/components/Tree.vue";
 import { useTree } from "@/platform/composables/useTree";
 
@@ -21,9 +44,8 @@ export default {
     Branch,
   },
   setup() {
-    const { setActiveBranchById, activeBranch, trunk } = useTree();
+    const { setActiveBranchById, activeBranch, trunk, id } = useTree();
     const route = useRoute();
-    const showDrawer = shallowRef(false);
 
     watch(
       () => route.params.branch,
@@ -31,9 +53,9 @@ export default {
         setActiveBranchById(_branch);
       },
       { immediate: true }
-    )
+    );
 
-    return { activeBranch, trunk, showDrawer }
+    return { activeBranch, trunk, id };
   },
-}
+};
 </script>

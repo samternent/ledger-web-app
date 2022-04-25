@@ -17,43 +17,33 @@ export default [
           hasRightPanel: true,
         },
         component: () => import("./views/BranchRoute.vue"),
-      },
-      {
-        path: "/l/:ledgerId/:branch/create",
-        props: true,
-        meta: {
-          hasLeftPanel: true,
-          hasRightPanel: true,
-          // hasTopPanel: false,
-        },
-        component: () => import("./views/CreateBranchRoute.vue"),
-      },
-      {
-        path: "/l/:ledgerId/:branch/edit",
-        props: true,
-        meta: {
-          hasLeftPanel: false,
-          // hasTopPanel: false,
-        },
-        component: () => import("./views/EditBranchRoute.vue"),
-      },
-      {
-        path: "/l/:ledgerId/:branch/data",
-        props: true,
-        meta: {
-          hasLeftPanel: false,
-          hasRightPanel: true,
-        },
-        component: () => import("./views/DataBranchRoute.vue"),
-      },
-      {
-        path: "/l/:ledgerId/:branch/board",
-        props: true,
-        meta: {
-          hasLeftPanel: true,
-          // hasTopPanel: false,
-        },
-        component: () => import("./views/BoardBranchRoute.vue"),
+        children: [
+          {
+            path: "/l/:ledgerId/:branch",
+            props: true,
+            component: () => import("./views/MarkdownBranchRoute.vue"),
+          },
+          {
+            path: "/l/:ledgerId/:branch/create",
+            props: true,
+            component: () => import("./views/CreateBranchRoute.vue"),
+          },
+          {
+            path: "/l/:ledgerId/:branch/edit",
+            props: true,
+            component: () => import("./views/EditBranchRoute.vue"),
+          },
+          {
+            path: "/l/:ledgerId/:branch/data",
+            props: true,
+            component: () => import("./views/DataBranchRoute.vue"),
+          },
+          {
+            path: "/l/:ledgerId/:branch/charts",
+            props: true,
+            component: () => import("./views/BoardBranchRoute.vue"),
+          },
+        ],
       },
       {
         path: "",

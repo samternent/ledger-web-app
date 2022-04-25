@@ -24,9 +24,11 @@
             </router-link>
           </li>
           <li v-if="activeParent">
-            <router-link :alt="activeParent.name" :to="`/l/${activeBranch.parent}`">{{
-              activeParent.name
-            }}</router-link>
+            <router-link
+              :alt="activeParent.name"
+              :to="`/l/${activeBranch.parent}`"
+              >{{ activeParent.name }}</router-link
+            >
           </li>
           <li>
             <span class="w-52 block truncate">{{ activeBranch.name }}</span>
@@ -34,41 +36,34 @@
         </ul>
 
         <div class="flex justify-end">
-          <Search v-model="searchTerm" :search-results="searchResults" :tree-id="id" />
+          <Search
+            v-model="searchTerm"
+            :search-results="searchResults"
+            :tree-id="id"
+          />
         </div>
       </div>
     </Teleport>
 
     <div class="flex flex-col lg:flex-row flex-1">
-      <div class="flex-1 py-2 px-4 flex flex-col">
-        <div class="font-light flex justify-between items-center">
-          <div class="text-2xl lg:text-3xl line-clamp-1">
+      <div class="flex-1 px-4 flex flex-col">
+        <div class="font-thin flex justify-between items-center pb-2">
+          <div class="text-2xl md:text-4xl line-clamp-1">
             {{ activeBranch.name }}
           </div>
           <div class="flex">
-            <router-link alt="Edit" :to="`/l/${id}/${activeBranch.id}/edit`" class="btn btn-primary btn-outline btn-sm mr-2">
+            <router-link
+              v-if="$route.path === `/l/${id}/${activeBranch.id}`"
+              alt="Edit"
+              :to="`/l/${id}/${activeBranch.id}/edit`"
+              class="btn btn-primary btn-outline btn-sm mr-2"
+            >
               Edit
-            </router-link>
-            <router-link alt="Edit" :to="`/l/${id}/${activeBranch.id}/data`" class="btn btn-ghost btn-sm mr-2">
-              Data
             </router-link>
           </div>
         </div>
-        <div v-if="editorContent" class="flex-1 flex my-4">
-          <div v-html="editorContent" class="prose text-base-content" />
-        </div>
-        <div v-else class="mx-auto text-center flex flex-col my-8">
-          <!-- <VoidSVG class="text-accent w-64 mx-auto opacity-90" /> -->
-          <!-- <h2 class="text-3xl text-neutral font-medium opacity-80 my-8">
-            Add some content to this page
-          </h2> -->
-        </div>
+        <RouterView />
       </div>
-      <Teleport to="#RightPanelContent">
-        <div class="flex-1 flex flex-col">
-          <BranchLog />
-        </div>
-      </Teleport>
     </div>
   </div>
 </template>
@@ -81,15 +76,12 @@ import Search from "@/platform/modules/search/Search.vue";
 import VoidSVG from "@/assets/svg/Void.vue";
 import MindMap from "@/assets/svg/MindMap.vue";
 
-import BranchLog from './components/BranchLog.vue';
-
 export default {
   components: {
     Editor,
     Search,
     VoidSVG,
     MindMap,
-    BranchLog,
   },
   emits: ["explore"],
   setup() {
@@ -120,36 +112,37 @@ export default {
     async function addBranch() {
       await createBranch({
         name: newBranchName.value,
-        color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
       });
       newBranchName.value = "";
     }
 
     const searchResults = computed(() => {
       if (!searchTerm.value) return [];
-      console.log(searchDataTypes(searchTerm.value));
       return [
-        ...searchBranches(searchTerm.value).map(({ data }) => ({
-          ...data,
-          parent: getBranch(data.parent)?.data,
-        })).slice(0, 6),
-        ...searchDataTypes(searchTerm.value).map(({ data }) => ({
-          ...data.types,
-          parent: getBranch(data.parent)?.data,
-        })).slice(0, 6),
-        ...searchContent(searchTerm.value).map(({ data }) => {
-          const branch = getBranch(data.id)?.data;
-          return ({
-          ...data,
-          ...branch,
-          parent: getBranch(branch.parent)?.data,
-        })
-        }).slice(0, 6),
+        ...searchBranches(searchTerm.value)
+          .map(({ data }) => ({
+            ...data,
+            parent: getBranch(data.parent)?.data,
+          }))
+          .slice(0, 6),
+        ...searchDataTypes(searchTerm.value)
+          .map(({ data }) => ({
+            ...data.types,
+            parent: getBranch(data.parent)?.data,
+          }))
+          .slice(0, 6),
+        ...searchContent(searchTerm.value)
+          .map(({ data }) => {
+            const branch = getBranch(data.id)?.data;
+            return {
+              ...data,
+              ...branch,
+              parent: getBranch(branch.parent)?.data,
+            };
+          })
+          .slice(0, 6),
       ];
-    });
-
-    watchEffect(() => {
-      editorContent.value = content.value ? content.value.content : "";
     });
 
     return {

@@ -14,10 +14,10 @@
 <script>
 import { useRouter } from "vue-router";
 import { provideTree } from "@/platform/composables/useTree";
-import { provideTreeLoader } from '@/platform/composables/useTreeLoader';
-import TreeList from '@/views/tree/TreeList.vue'
-import ControlPanel from '@/platform/modules/control/ControlPanel.vue'
-import ControlPanelMini from '@/platform/modules/control/ControlPanelMini.vue'
+import { provideTreeLoader } from "@/platform/composables/useTreeLoader";
+import TreeList from "@/views/tree/TreeList.vue";
+import ControlPanel from "@/platform/modules/control/ControlPanel.vue";
+import ControlPanelMini from "@/platform/modules/control/ControlPanelMini.vue";
 
 export default {
   components: {
@@ -44,5 +44,5 @@ export default {
 
     provideTree();
   },
-}
+};
 </script>
