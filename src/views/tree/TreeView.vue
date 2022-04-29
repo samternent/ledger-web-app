@@ -1,13 +1,13 @@
 <template>
   <Teleport to="#LeftPanelContent">
-    <div class="overflow-x-hidden pr-6">
+    <div class="overflow-x-hidden pr-6" v-if="trunk">
       <Tree
         :branch-id="trunk.id"
         v-if="trunk.id && $route.path !== `/l/${id}/${activeBranch.id}/create`"
       />
     </div>
   </Teleport>
-  <div class="relative flex overflow-auto flex-1 flex-col">
+  <div class="relative flex overflow-auto flex-1 flex-col" v-if="activeBranch">
     <div class="tabs py-3">
       <router-link
         class="tab tab-bordered"
@@ -28,7 +28,7 @@
         >Charts</router-link
       > -->
     </div>
-    <Branch v-if="activeBranch" />
+    <Branch />
   </div>
 </template>
 <script>

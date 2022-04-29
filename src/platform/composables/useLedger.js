@@ -37,7 +37,7 @@ export function provideLedger({ signKey, verifyKey }) {
             lokiPlugin,
             {
               onBeforeReplay() {
-                clear();
+                clearLedger();
               },
               onAuth() {
                 if (genesisRecord) {
@@ -99,21 +99,20 @@ export function provideLedger({ signKey, verifyKey }) {
     }
   }
 
-  function clear() {
-    // if (ledger.value.pending_records.length) {
-    //   const resp = confirm(
-    //     "You have unsaved changes, are you sure you want to close without saving?"
-    //   );
-    //   if (!resp) {
-    //     return;
-    //   }
-    // }
+  function clearLedger() {
     loaded.value = false;
 
-    getCollection("branches").clear();
-    getCollection("content").clear();
+    if (ledger.value) {
+      getCollection("branches")?.clear();
+      getCollection("content")?.clear();
+      getCollection("dataTypes")?.clear();
+      getCollection("branchData")?.clear();
 
-    window.localStorage.removeItem("ledger");
+      window.localStorage.setItem(
+        `ledger_${ledger.value.id.slice(0, 6)}`,
+        JSON.stringify(ledger.value)
+      );
+    }
   }
 
   const ledgerInterface = {
@@ -121,7 +120,7 @@ export function provideLedger({ signKey, verifyKey }) {
       loadLedger,
       addRecord,
       updateRecord,
-      clear,
+      clearLedger,
       getCollection,
     },
     loading,

@@ -54,6 +54,10 @@ export default [
   {
     path: "/l/create",
     component: () => import("./views/CreateRoute.vue"),
+    meta: {
+      hasTopPanel: true,
+      hasLeftPanel: true,
+    },
   },
   {
     path: "/l/import",

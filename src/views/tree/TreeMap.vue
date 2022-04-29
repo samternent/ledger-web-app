@@ -1,13 +1,17 @@
 <template>
   <div class="flex w-full flex-col flex-1">
     <div class="flex flex-1 justify-center items-center">
-        <div class="relative">
-            <!-- Outer Ring-->
-            <div class="w-12 h-12 rounded-full absolute border-2 border-dashed border-base-100"></div>
+      <div class="relative">
+        <!-- Outer Ring-->
+        <div
+          class="w-12 h-12 rounded-full absolute border-2 border-dashed border-base-100"
+        ></div>
 
-            <!-- Inner Ring -->
-            <div class="w-12 h-12 rounded-full animate-spin absolute border-2 border-dashed border-accent border-t-transparent"></div>
-        </div>
+        <!-- Inner Ring -->
+        <div
+          class="w-12 h-12 rounded-full animate-spin absolute border-2 border-dashed border-accent border-t-transparent"
+        ></div>
+      </div>
     </div>
     <!-- <Teleport to="#TopFixedPanel">
       <div
@@ -30,10 +34,12 @@
   </div>
 </template>
 <script>
-import { useRouter } from "vue-router";
+import { watchEffect } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import TreeMapItem from "@/views/tree/components/TreeMapItem.vue";
 import Tree from "@/views/tree/components/Tree.vue";
 import { useTree } from "@/platform/composables/useTree";
+import { useLedger } from "@/platform/composables/useLedger";
 
 export default {
   components: {
@@ -42,11 +48,17 @@ export default {
   },
   setup() {
     const { trunk, id } = useTree();
+    const { ledger, loaded } = useLedger();
     const router = useRouter();
+    const route = useRoute();
 
-    router.push(`/l/${id.value}/${trunk.value.id}`);
+    watchEffect(() => {
+      if (loaded.value) {
+        router.push(`/l/${id.value}/${trunk.value.id}`);
+      }
+    });
 
-    return { trunk }
+    return { trunk };
   },
-}
+};
 </script>

@@ -34,6 +34,7 @@ export default {
   setup(props) {
     const { loadTree } = provideTreeLoader();
     const router = useRouter();
+    provideTree();
 
     const rawLedger = JSON.parse(localStorage.getItem("ledger"));
     if (rawLedger) {
@@ -41,8 +42,6 @@ export default {
     } else {
       router.replace(`/l/create`);
     }
-
-    provideTree();
   },
 };
 </script>
