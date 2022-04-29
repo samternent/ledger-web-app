@@ -85,25 +85,18 @@
         class="flex-1 flex flex-col overflow-y-auto bg-base-100 p-2"
         v-if="activeViewRight === 'commit'"
       >
-        <textarea
+        <input
           v-model="commitMessage"
-          class="textarea resize-none textarea-bordered bg-base-100 rounded flex-1"
+          class="input input-bordered bg-base-100 rounded"
           placeholder="Commit message..."
         />
         <div class="flex justify-end mt-4">
-          <button
-            class="btn btn-sm mx-1"
-            @click="squashRecords"
-            :disabled="!ledger.pending_records.length"
-          >
-            Squash
-          </button>
           <button
             class="btn btn-outline btn-sm mx-1"
             @click="squashCommit"
             :disabled="!ledger.pending_records.length"
           >
-            Squash & Commit
+            Commit
           </button>
         </div>
       </div>
