@@ -69,7 +69,7 @@
               </li>
               <li>Tree structured content hierarchy.</li>
               <li>Merkle-Tree/Blockchain data structure.</li>
-              <li>Tamper-proof using browser based cryptography.</li>
+              <li>Tamper-proof and verifyable with cryptography.</li>
               <li>
                 Client-side encryption using WebAssembly and
                 <a

@@ -7,7 +7,11 @@ export function provideAppShell() {
     JSON.parse(localStorage.getItem("isBottomPanelExpanded"))
   );
   const isLeftPanelExpanded = shallowRef(
-    JSON.parse(localStorage.getItem("isLeftPanelExpanded"))
+    JSON.parse(
+      typeof localStorage.getItem("isLeftPanelExpanded") !== "object"
+        ? localStorage.getItem("isLeftPanelExpanded")
+        : true
+    )
   );
   const isRightPanelExpanded = shallowRef(
     JSON.parse(localStorage.getItem("isRightPanelExpanded"))
