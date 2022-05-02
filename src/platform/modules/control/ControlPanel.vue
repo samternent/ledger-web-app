@@ -259,7 +259,7 @@
   </div>
 </template>
 <script>
-import { ref, watch, onUpdated, computed } from "vue";
+import { ref, watch, onUpdated, computed, onMounted } from "vue";
 import { watchThrottled } from "@vueuse/core";
 import { useLedger } from "@/platform/composables/useLedger";
 import { useTree } from "@/platform/composables/useTree";
@@ -300,6 +300,12 @@ export default {
 
     onUpdated(() => {
       output.value.scrollTop = output.value.scrollHeight;
+    });
+
+    onMounted(() => {
+      let gplatform = document.createElement("script");
+      gplatform.setAttribute("src", "https://apis.google.com/js/platform.js");
+      document.head.appendChild(gplatform);
     });
 
     watch(activeView, () => {
